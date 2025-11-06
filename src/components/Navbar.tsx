@@ -1,4 +1,5 @@
 export default function Navbar() {
+  //testing git commands
   return (
     <header className="fixed inset-x-0 top-0 z-50 bg-white/70 backdrop-blur border-b border-zinc-200">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
