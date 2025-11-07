@@ -1,4 +1,4 @@
-import type { Job } from "../stores/types";
+import type { Job } from "../stores/job.types";
 import axiosInstance from "./axiosInstance";
 
 export const JobService = {
