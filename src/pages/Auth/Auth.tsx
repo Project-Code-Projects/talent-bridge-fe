@@ -1,28 +1,28 @@
 // pages/Auth.tsx
 
-import { useState } from 'react';
-import type { FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useAuthStore } from '../stores/authStore';
+import { useState } from "react";
+import type { FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { useAuthStore } from "../../stores/authStore";
 
 export default function Auth() {
   const navigate = useNavigate();
   const { signup, login, isLoading, error, clearError } = useAuthStore();
 
-  const [activeTab, setActiveTab] = useState<'signup' | 'login'>('signup');
+  const [activeTab, setActiveTab] = useState<"signup" | "login">("signup");
 
   // Signup form state
   const [signupForm, setSignupForm] = useState({
-    name: '',
-    email: '',
-    password: ''
+    name: "",
+    email: "",
+    password: "",
   });
 
   // Login form state
   const [loginForm, setLoginForm] = useState({
-    email: '',
-    password: ''
+    email: "",
+    password: "",
   });
 
   // Handle signup
@@ -32,7 +32,7 @@ export default function Auth() {
 
     try {
       await signup(signupForm.name, signupForm.email, signupForm.password);
-      navigate('/profile');
+      navigate("/profile");
     } catch {
       // Error is handled by store
     }
@@ -45,7 +45,7 @@ export default function Auth() {
 
     try {
       await login(loginForm.email, loginForm.password);
-      navigate('/jobs');
+      navigate("/jobs");
     } catch {
       // Error is handled by store
     }
@@ -55,7 +55,7 @@ export default function Auth() {
   const formVariants = {
     hidden: { opacity: 0, x: -20 },
     visible: { opacity: 1, x: 0 },
-    exit: { opacity: 0, x: 20 }
+    exit: { opacity: 0, x: 20 },
   };
 
   return (
@@ -76,37 +76,41 @@ export default function Auth() {
           <div className="flex border-b border-zinc-200">
             <button
               onClick={() => {
-                setActiveTab('signup');
+                setActiveTab("signup");
                 clearError();
               }}
               className={`relative flex-1 px-6 py-4 text-sm font-semibold transition ${
-                activeTab === 'signup' ? 'text-zinc-900' : 'text-zinc-500 hover:text-zinc-700'
+                activeTab === "signup"
+                  ? "text-zinc-900"
+                  : "text-zinc-500 hover:text-zinc-700"
               }`}
             >
               Sign Up
-              {activeTab === 'signup' && (
+              {activeTab === "signup" && (
                 <motion.div
                   layoutId="activeTab"
                   className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600"
-                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
                 />
               )}
             </button>
             <button
               onClick={() => {
-                setActiveTab('login');
+                setActiveTab("login");
                 clearError();
               }}
               className={`relative flex-1 px-6 py-4 text-sm font-semibold transition ${
-                activeTab === 'login' ? 'text-zinc-900' : 'text-zinc-500 hover:text-zinc-700'
+                activeTab === "login"
+                  ? "text-zinc-900"
+                  : "text-zinc-500 hover:text-zinc-700"
               }`}
             >
               Log In
-              {activeTab === 'login' && (
+              {activeTab === "login" && (
                 <motion.div
                   layoutId="activeTab"
                   className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600"
-                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
                 />
               )}
             </button>
@@ -117,7 +121,7 @@ export default function Auth() {
             {error && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
+                animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 className="overflow-hidden border-b border-red-100 bg-red-50 px-6 py-3 text-sm text-red-600"
               >
@@ -129,7 +133,7 @@ export default function Auth() {
           {/* Form Content */}
           <div className="p-6">
             <AnimatePresence mode="wait">
-              {activeTab === 'signup' ? (
+              {activeTab === "signup" ? (
                 <motion.form
                   key="signup"
                   variants={formVariants}
@@ -141,7 +145,10 @@ export default function Auth() {
                   className="space-y-4"
                 >
                   <div>
-                    <label htmlFor="signup-name" className="block text-sm font-medium text-zinc-700">
+                    <label
+                      htmlFor="signup-name"
+                      className="block text-sm font-medium text-zinc-700"
+                    >
                       Full Name
                     </label>
                     <input
@@ -149,14 +156,19 @@ export default function Auth() {
                       type="text"
                       required
                       value={signupForm.name}
-                      onChange={e => setSignupForm({ ...signupForm, name: e.target.value })}
+                      onChange={(e) =>
+                        setSignupForm({ ...signupForm, name: e.target.value })
+                      }
                       className="mt-1 w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                       placeholder="John Doe"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="signup-email" className="block text-sm font-medium text-zinc-700">
+                    <label
+                      htmlFor="signup-email"
+                      className="block text-sm font-medium text-zinc-700"
+                    >
                       Email
                     </label>
                     <input
@@ -164,14 +176,19 @@ export default function Auth() {
                       type="email"
                       required
                       value={signupForm.email}
-                      onChange={e => setSignupForm({ ...signupForm, email: e.target.value })}
+                      onChange={(e) =>
+                        setSignupForm({ ...signupForm, email: e.target.value })
+                      }
                       className="mt-1 w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                       placeholder="john@example.com"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="signup-password" className="block text-sm font-medium text-zinc-700">
+                    <label
+                      htmlFor="signup-password"
+                      className="block text-sm font-medium text-zinc-700"
+                    >
                       Password
                     </label>
                     <input
@@ -180,10 +197,10 @@ export default function Auth() {
                       required
                       minLength={6}
                       value={signupForm.password}
-                      onChange={e =>
+                      onChange={(e) =>
                         setSignupForm({
                           ...signupForm,
-                          password: e.target.value
+                          password: e.target.value,
                         })
                       }
                       className="mt-1 w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
@@ -196,7 +213,7 @@ export default function Auth() {
                     disabled={isLoading}
                     className="w-full rounded-xl bg-zinc-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    {isLoading ? 'Creating account...' : 'Sign Up'}
+                    {isLoading ? "Creating account..." : "Sign Up"}
                   </button>
                 </motion.form>
               ) : (
@@ -211,7 +228,10 @@ export default function Auth() {
                   className="space-y-4"
                 >
                   <div>
-                    <label htmlFor="login-email" className="block text-sm font-medium text-zinc-700">
+                    <label
+                      htmlFor="login-email"
+                      className="block text-sm font-medium text-zinc-700"
+                    >
                       Email
                     </label>
                     <input
@@ -219,14 +239,19 @@ export default function Auth() {
                       type="email"
                       required
                       value={loginForm.email}
-                      onChange={e => setLoginForm({ ...loginForm, email: e.target.value })}
+                      onChange={(e) =>
+                        setLoginForm({ ...loginForm, email: e.target.value })
+                      }
                       className="mt-1 w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                       placeholder="john@example.com"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="login-password" className="block text-sm font-medium text-zinc-700">
+                    <label
+                      htmlFor="login-password"
+                      className="block text-sm font-medium text-zinc-700"
+                    >
                       Password
                     </label>
                     <input
@@ -234,10 +259,10 @@ export default function Auth() {
                       type="password"
                       required
                       value={loginForm.password}
-                      onChange={e =>
+                      onChange={(e) =>
                         setLoginForm({
                           ...loginForm,
-                          password: e.target.value
+                          password: e.target.value,
                         })
                       }
                       className="mt-1 w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
@@ -250,7 +275,7 @@ export default function Auth() {
                     disabled={isLoading}
                     className="w-full rounded-xl bg-zinc-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    {isLoading ? 'Logging in...' : 'Log In'}
+                    {isLoading ? "Logging in..." : "Log In"}
                   </button>
                 </motion.form>
               )}
@@ -260,11 +285,11 @@ export default function Auth() {
 
         {/* Footer Text */}
         <p className="mt-6 text-center text-sm text-zinc-600">
-          {activeTab === 'signup' ? (
+          {activeTab === "signup" ? (
             <>
-              Already have an account?{' '}
+              Already have an account?{" "}
               <button
-                onClick={() => setActiveTab('login')}
+                onClick={() => setActiveTab("login")}
                 className="font-semibold text-indigo-600 hover:text-indigo-500"
               >
                 Log in
@@ -272,9 +297,9 @@ export default function Auth() {
             </>
           ) : (
             <>
-              Don't have an account?{' '}
+              Don't have an account?{" "}
               <button
-                onClick={() => setActiveTab('signup')}
+                onClick={() => setActiveTab("signup")}
                 className="font-semibold text-indigo-600 hover:text-indigo-500"
               >
                 Sign up
