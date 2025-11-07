@@ -1,12 +1,149 @@
-export default function Jobs() {
+import { useEffect } from "react";
+import { motion } from "framer-motion";
+import { fadeUp, stagger } from "../utils/animation";
+import Footer from "../components/landing-page-components/Footer";
+import { Link } from "react-router-dom";
+import {
+  selectError,
+  selectIsLoading,
+  selectJobs,
+  useJobStore,
+} from "../stores/JobsStore";
+import LocationIcon from "../assets/LocationIcon.png";
+
+export default function JobsPage() {
+  const jobs = useJobStore(selectJobs);
+  const isLoading = useJobStore(selectIsLoading);
+  const error = useJobStore(selectError);
+  const fetchJobs = useJobStore((state) => state.fetchJobs);
+  const clearError = useJobStore((state) => state.clearError);
+
+  useEffect(() => {
+    // Clear any previous errors
+    clearError();
+    // Fetch jobs on mount
+    fetchJobs();
+  }, [fetchJobs, clearError]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen pt-28 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
+          <p className="mt-4 text-zinc-600 font-medium">
+            Loading amazing opportunities...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen pt-28 flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <div className="text-red-500 text-5xl mb-4">⚠️</div>
+          <h2 className="text-2xl font-bold mb-2">
+            Oops! Something went wrong
+          </h2>
+          <p className="text-zinc-600 mb-6">{error}</p>
+          <div className="flex gap-3 justify-center">
+            <button
+              onClick={() => fetchJobs()}
+              className="inline-flex items-center rounded-xl bg-zinc-900 px-6 py-3 text-sm font-semibold text-white shadow hover:bg-zinc-800 transition-colors"
+            >
+              Try Again
+            </button>
+            <button
+              onClick={clearError}
+              className="inline-flex items-center rounded-xl border border-zinc-300 bg-white px-6 py-3 text-sm font-semibold text-zinc-900 hover:bg-zinc-50 transition-colors"
+            >
+              Dismiss
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-white">
-      <section className="relative isolate overflow-hidden pt-28 md:pt-32">
-        <div className="pointer-events-none absolute inset-0 md:pt-32">
-          <div className="absolute -top-40 right-0 h-72 w-72 rounded full blur-3xl bg-blue-100" />
-          <div className="absolute -top-40 right-0 h-72 w-72 rounded full blur-3xl bg-blue-100" />
+    <>
+      <section className="pt-28 pb-16 px-4">
+        <div className="mx-auto max-w-7xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-12"
+          >
+            <h1 className="text-4xl font-bold tracking-tight mb-4">
+              Available Positions
+            </h1>
+            <p className="text-lg text-zinc-600">
+              {jobs.length} {jobs.length === 1 ? "job" : "jobs"} available •
+              Updated regularly
+            </p>
+          </motion.div>
+
+          {jobs.length === 0 ? (
+            <div className="text-center py-16 bg-zinc-50 rounded-2xl">
+              <div className="text-6xl mb-4">💼</div>
+              <h3 className="text-xl font-semibold mb-2">
+                No jobs available right now
+              </h3>
+              <p className="text-zinc-600">
+                Check back soon for new opportunities!
+              </p>
+            </div>
+          ) : (
+            <motion.div
+              variants={stagger}
+              initial="initial"
+              animate="animate"
+              className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+            >
+              {jobs.map((job) => (
+                <motion.div key={job.id} variants={fadeUp}>
+                  <Link
+                    to={`/jobs/${job.id}`}
+                    className="block h-full rounded-xl border border-zinc-200 bg-white p-6 shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-200"
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <h3 className="text-lg font-semibold text-zinc-900 line-clamp-2">
+                        {job.title}
+                      </h3>
+                      <span className="ml-2 inline-flex shrink-0 items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-700 capitalize">
+                        {job.hiringStatus}
+                      </span>
+                    </div>
+
+                    <p className="text-sm font-medium text-zinc-600 mb-4">
+                      {job.company}
+                    </p>
+
+                    <div className="flex items-center gap-2 text-sm text-zinc-500 mb-4">
+                      <img
+                        src={LocationIcon}
+                        alt="location"
+                        className="w-5 h-5"
+                      />{" "}
+                      {job.location}
+                      <span>•</span>
+                      <span>{job.employmentType}</span>
+                    </div>
+
+                    <div className="pt-4 border-t border-zinc-100">
+                      <p className="text-base font-semibold text-blue-600">
+                        {job.salaryRange}
+                      </p>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
         </div>
       </section>
-    </div>
+      <Footer />
+    </>
   );
 }
