@@ -1,22 +1,19 @@
-import './App.css';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import LandingPage from './pages/LandingPage';
-import Auth from './pages/Auth';
-import { useEffect } from 'react';
-import { useAuthStore } from './stores/authStore';
+import { BrowserRouter, Route, Routes } from "react-router";
+import "./App.css";
+import LandingPage from "./pages/Landing/LandingPage";
+import Layout from "./components/layout/Layout";
+import JobsPage from "./pages/Jobs/JobsPage";
+import JobDetailsPage from "./pages/Jobs/JobDetailsPage";
 
 function App() {
-  const checkAuth = useAuthStore(state => state.checkAuth);
-
-  useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
-
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/auth" element={<Auth />} />
+        <Route path="/" element={<Layout />}>
+          <Route index element={<LandingPage />} />
+          <Route path="jobs" element={<JobsPage />} />
+          <Route path="jobs/:id" element={<JobDetailsPage />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
