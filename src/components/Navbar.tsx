@@ -20,6 +20,9 @@ export default function Navbar() {
           >
             Company
           </a>
+          <a href="/jobs" className="text-sm text-zinc-600 hover:text-zinc-900">
+            Jobs
+          </a>
           <a href="/auth" className="text-sm text-zinc-600 hover:text-zinc-900">
             Sign up/Log in
           </a>

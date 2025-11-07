@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import StarIcon from "../assets/StarIcon.png";
+import StarIcon from "../../assets/StarIcon.png";
 import DashboardStat from "./DashboardStat";
 import { fadeUp, stagger } from "../../utils/animation";
 

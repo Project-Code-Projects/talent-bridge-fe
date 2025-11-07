@@ -1,8 +1,7 @@
-import CheckIcon from "../assets/CheckIcon.png";
+import { fadeUp } from "../../utils/animation";
+import CheckIcon from "../../assets/CheckIcon.png";
 import { motion } from "framer-motion";
-import { fadeUp } from "../../framer-setup/framer";
-import StatBlock from "../../landing-ui-helpers/StatBlock";
-
+import StatBlock from "./StatBlock";
 export default function CompanyInfo() {
   return (
     <section id="company" className="py-16 md:py-24">

@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
-import FolderIcon from "../assets/FolderIcon.png";
-import UsersIcon from "../assets/UsersIcon.png";
-import ZapIcon from "../assets/ZapIcon.png";
-import ChartIcon from "../assets/ChartIcon.png";
 import { fadeUp, stagger } from "../../utils/animation";
+import FolderIcon from "../../assets/FolderIcon.png";
+import UsersIcon from "../../assets/UsersIcon.png";
+import ZapIcon from "../../assets/ZapIcon.png";
+import ChartIcon from "../../assets/ChartIcon.png";
 
 export default function Features() {
   const items = [
