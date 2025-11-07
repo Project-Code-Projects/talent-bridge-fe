@@ -1,6 +1,6 @@
 import { AxiosError } from "axios";
 import { create } from "zustand";
-import type { JobsState } from "./job.types";
+import type { JobsState } from "../types/job.types";
 import { devtools } from "zustand/middleware";
 import { JobService } from "../services/jobService";
 

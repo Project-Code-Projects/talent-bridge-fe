@@ -6,14 +6,14 @@ import {
   selectJobById,
   selectSelectedJob,
   useJobStore,
-} from "../stores/JobsStore";
+} from "../../stores/JobsStore";
 import { motion } from "framer-motion";
-import { fadeUp } from "../utils/animation";
-import Footer from "../components/landing-page-components/Footer";
-import CheckIcon from "../assets/CheckIcon.png";
-import LocationIcon from "../assets/LocationIcon.png";
-import ToDoListIcon from "../assets/ToDoListIcon.png";
-import BenefitsIcon from "../assets/BenefitsIcon.png";
+import { fadeUp } from "../../utils/animation";
+import Footer from "../../components/landing-page/Footer";
+import CheckIcon from "../../assets/CheckIcon.png";
+import LocationIcon from "../../assets/LocationIcon.png";
+import ToDoListIcon from "../../assets/ToDoListIcon.png";
+import BenefitsIcon from "../../assets/BenefitsIcon.png";
 
 export default function JobDetailsPage() {
   const { id } = useParams<{ id: string }>();

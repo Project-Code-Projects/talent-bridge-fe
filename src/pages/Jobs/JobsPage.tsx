@@ -1,15 +1,15 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
-import { fadeUp, stagger } from "../utils/animation";
-import Footer from "../components/landing-page-components/Footer";
+import { fadeUp, stagger } from "../../utils/animation";
+import Footer from "../../components/landing-page/Footer";
 import { Link } from "react-router-dom";
 import {
   selectError,
   selectIsLoading,
   selectJobs,
   useJobStore,
-} from "../stores/JobsStore";
-import LocationIcon from "../assets/LocationIcon.png";
+} from "../../stores/JobsStore";
+import LocationIcon from "../../assets/LocationIcon.png";
 
 export default function JobsPage() {
   const jobs = useJobStore(selectJobs);
