@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+// src/pages/Jobs/JobDetailsPage.tsx
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import {
   selectError,
@@ -14,6 +15,9 @@ import CheckIcon from "../../assets/CheckIcon.png";
 import LocationIcon from "../../assets/LocationIcon.png";
 import ToDoListIcon from "../../assets/ToDoListIcon.png";
 import BenefitsIcon from "../../assets/BenefitsIcon.png";
+import { useApplicationStore } from "../../stores/applicationStore";
+import { useAuthStore } from "../../stores/authStore";
+import CoverLetterModal from "../../components/application/CoverLetterModal";
 
 export default function JobDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -26,26 +30,30 @@ export default function JobDetailsPage() {
   const clearSelectedJob = useJobStore((state) => state.clearSelectedJob);
   const clearError = useJobStore((state) => state.clearError);
 
-  // Check if job exists in cache
+  const applyToJob = useApplicationStore((state) => state.applyToJob);
+  const setApplyingJob = useApplicationStore((state) => state.setApplyingJob);
+  const applyingJobs = useApplicationStore((state) => state.applyingJobs);
+  const user = useAuthStore((state) => state.user);
+
   const cachedJob = useJobStore(selectJobById(id || ""));
+
+  const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
     if (!id) return;
 
     clearError();
 
-    // If we have cached job and no selected job, use cached data
     if (cachedJob && !selectedJob) {
       useJobStore.setState({ selectedJob: cachedJob });
-      return; // Don't fetch if we're using cached data
+      return;
     }
 
-    // Only fetch if we don't have the job data
     if (!selectedJob || selectedJob.id !== id) {
       fetchJobById(id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]); // Only depend on id
+  }, [id]);
 
   useEffect(() => {
     return () => {
@@ -54,25 +62,33 @@ export default function JobDetailsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  //   useEffect(() => {
-  //     if (!id) {
-  //       clearError();
+  const handleApplyConfirmed = async (coverLetter?: string) => {
+    if (!user || !selectedJob) {
+      navigate("/auth");
+      return;
+    }
 
-  //       // Use cached job if available, otherwise fetch
-  //       if (cachedJob && !selectedJob) {
-  //         // If we have cached job, use it immediately
-  //         useJobStore.setState({ selectedJob: cachedJob });
-  //       } else {
-  //         // Fetch fresh data
-  //         fetchJobById(id);
-  //       }
-  //     }
+    const jobIdNum = Number(selectedJob.id);
+    setApplyingJob(jobIdNum, true);
+    try {
+      await applyToJob({
+        jobId: jobIdNum,
+        userId: user.id,
+        coverLetter,
+        // note: resumeUrl can be omitted; backend will use profile resume if missing
+      });
+      // show a small success (you can replace with toast)
+      navigate("/dashboard");
+    } catch (err: any) {
+      // keep simple: show alert (or use your toast)
+      alert(err?.response?.data?.message || err?.message || "Failed to apply");
+    } finally {
+      setApplyingJob(jobIdNum, false);
+      setOpenModal(false);
+    }
+  };
 
-  //     return () => {
-  //       clearSelectedJob();
-  //     };
-  //   }, [id, fetchJobById, clearSelectedJob, clearError, cachedJob, selectedJob]);
-
+  // Guard render
   if (isLoading && !selectedJob) {
     return (
       <div className="min-h-screen pt-28 flex items-center justify-center">
@@ -116,6 +132,9 @@ export default function JobDetailsPage() {
     );
   }
 
+  const jobIdNum = Number(selectedJob.id);
+  const applying = applyingJobs[jobIdNum] || false;
+
   return (
     <>
       <section className="pt-28 pb-16 px-4">
@@ -132,7 +151,6 @@ export default function JobDetailsPage() {
             animate={{ opacity: 1, y: 0 }}
             className="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden"
           >
-            {/* Header */}
             <div className="bg-linear-to-r from-blue-50 to-indigo-50 p-8 border-b border-zinc-200">
               <div className="flex items-start justify-between mb-4">
                 <div>
@@ -164,16 +182,13 @@ export default function JobDetailsPage() {
               </div>
             </div>
 
-            {/* Content */}
             <div className="p-8 space-y-8">
-              {/* Short Description */}
               <motion.div variants={fadeUp}>
                 <p className="text-lg text-zinc-700 leading-relaxed">
                   {selectedJob.shortDescription}
                 </p>
               </motion.div>
 
-              {/* Responsibilities */}
               <motion.div variants={fadeUp}>
                 <h2 className="text-xl font-bold text-zinc-900 mb-3 flex items-center gap-2">
                   <img
@@ -190,7 +205,6 @@ export default function JobDetailsPage() {
                 </div>
               </motion.div>
 
-              {/* Requirements */}
               <motion.div variants={fadeUp}>
                 <h2 className="text-xl font-bold text-zinc-900 mb-3 flex items-center gap-2">
                   <img src={CheckIcon} alt="check" className="w-5 h-5" />{" "}
@@ -203,7 +217,6 @@ export default function JobDetailsPage() {
                 </div>
               </motion.div>
 
-              {/* Benefits */}
               <motion.div variants={fadeUp}>
                 <h2 className="text-xl font-bold text-zinc-900 mb-3 flex items-center gap-2">
                   <img src={BenefitsIcon} alt="benefits" className="w-5 h-5" />{" "}
@@ -216,7 +229,6 @@ export default function JobDetailsPage() {
                 </div>
               </motion.div>
 
-              {/* Deadline & Apply */}
               <motion.div
                 variants={fadeUp}
                 className="pt-6 border-t border-zinc-200"
@@ -229,23 +241,38 @@ export default function JobDetailsPage() {
                     <p className="text-lg font-semibold text-zinc-900">
                       {new Date(selectedJob.deadline).toLocaleDateString(
                         "en-US",
-                        {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        }
+                        { year: "numeric", month: "long", day: "numeric" }
                       )}
                     </p>
                   </div>
-                  <button className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-blue-600 px-8 py-3 text-sm font-semibold text-white shadow hover:bg-blue-700 transition-colors">
-                    Apply Now →
-                  </button>
+
+                  <div className="flex gap-3 w-full sm:w-auto">
+                    <button
+                      onClick={() => setOpenModal(true)}
+                      disabled={applying}
+                      className={`w-full sm:w-auto inline-flex items-center justify-center rounded-xl px-8 py-3 text-sm font-semibold text-white shadow transition-colors ${
+                        applying
+                          ? "bg-zinc-200 text-zinc-600 cursor-not-allowed"
+                          : "bg-blue-600 hover:bg-blue-700"
+                      }`}
+                    >
+                      {applying ? "Applying..." : "Apply Now →"}
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             </div>
           </motion.div>
         </div>
       </section>
+
+      <CoverLetterModal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        submitting={applying}
+        onConfirm={handleApplyConfirmed}
+      />
+
       <Footer />
     </>
   );

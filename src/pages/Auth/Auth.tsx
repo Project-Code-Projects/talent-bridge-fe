@@ -43,7 +43,7 @@ export default function Auth() {
 
     try {
       await login(loginForm.email, loginForm.password);
-      navigate("/jobs");
+      navigate("/profile");
     } catch {
       // Error is handled by store
     }
