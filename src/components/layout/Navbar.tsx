@@ -23,7 +23,6 @@ export default function Navbar() {
         </Link>
 
         <div className="hidden items-center gap-8 md:flex">
-          {/* Fixed these anchor tags */}
           <a
             href="#overview"
             className="text-sm text-zinc-600 hover:text-zinc-900"
@@ -36,6 +35,7 @@ export default function Navbar() {
           >
             Company
           </a>
+
           <Link
             to="/jobs"
             className={`text-sm hover:text-zinc-900 ${
@@ -45,13 +45,31 @@ export default function Navbar() {
             Jobs
           </Link>
 
-          {/* Conditional rendering based on authentication */}
+          {/* Authenticated Links */}
           {isAuthenticated ? (
             <div className="flex items-center gap-4">
-              {/* <span className="text-sm text-zinc-600">
-                Hi,{" "}
-                <span className="font-medium text-zinc-900">{user?.name}!</span>
-              </span> */}
+              <Link
+                to="/dashboard"
+                className={`text-sm hover:text-zinc-900 ${
+                  isActive("/dashboard")
+                    ? "text-zinc-900 font-medium"
+                    : "text-zinc-600"
+                }`}
+              >
+                Dashboard
+              </Link>
+
+              <Link
+                to="/profile"
+                className={`text-sm hover:text-zinc-900 ${
+                  isActive("/profile")
+                    ? "text-zinc-900 font-medium"
+                    : "text-zinc-600"
+                }`}
+              >
+                Profile
+              </Link>
+
               <button
                 onClick={handleLogout}
                 className="text-sm text-red-600 hover:text-red-700 font-medium cursor-pointer"
@@ -68,12 +86,12 @@ export default function Navbar() {
                   : "text-zinc-600"
               }`}
             >
-              Sign up/Log in
+              Sign up / Log in
             </Link>
           )}
         </div>
 
-        {/* Mobile button */}
+        {/* Mobile */}
         {isAuthenticated ? (
           <button
             onClick={handleLogout}
