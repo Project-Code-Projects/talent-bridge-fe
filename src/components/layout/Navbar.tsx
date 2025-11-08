@@ -1,5 +1,5 @@
-import { Link, useLocation, useNavigate } from "react-router";
-import { useAuthStore } from "../../stores/authStore";
+import { Link, useLocation, useNavigate } from 'react-router';
+import { useAuthStore } from '../../stores/authStore';
 
 export default function Navbar() {
   const location = useLocation();
@@ -11,7 +11,7 @@ export default function Navbar() {
 
   const handleLogout = () => {
     logout();
-    navigate("/");
+    navigate('/');
   };
 
   return (
@@ -23,23 +23,17 @@ export default function Navbar() {
         </Link>
 
         <div className="hidden items-center gap-8 md:flex">
-          <a
-            href="#overview"
-            className="text-sm text-zinc-600 hover:text-zinc-900"
-          >
+          <a href="#overview" className="text-sm text-zinc-600 hover:text-zinc-900">
             Overview
           </a>
-          <a
-            href="#company"
-            className="text-sm text-zinc-600 hover:text-zinc-900"
-          >
+          <a href="#company" className="text-sm text-zinc-600 hover:text-zinc-900">
             Company
           </a>
 
           <Link
             to="/jobs"
             className={`text-sm hover:text-zinc-900 ${
-              isActive("/jobs") ? "text-zinc-900 font-medium" : "text-zinc-600"
+              isActive('/jobs') ? 'text-zinc-900 font-medium' : 'text-zinc-600'
             }`}
           >
             Jobs
@@ -51,9 +45,7 @@ export default function Navbar() {
               <Link
                 to="/dashboard"
                 className={`text-sm hover:text-zinc-900 ${
-                  isActive("/dashboard")
-                    ? "text-zinc-900 font-medium"
-                    : "text-zinc-600"
+                  isActive('/dashboard') ? 'text-zinc-900 font-medium' : 'text-zinc-600'
                 }`}
               >
                 Dashboard
@@ -62,9 +54,7 @@ export default function Navbar() {
               <Link
                 to="/profile"
                 className={`text-sm hover:text-zinc-900 ${
-                  isActive("/profile")
-                    ? "text-zinc-900 font-medium"
-                    : "text-zinc-600"
+                  isActive('/profile') ? 'text-zinc-900 font-medium' : 'text-zinc-600'
                 }`}
               >
                 Profile
@@ -81,12 +71,10 @@ export default function Navbar() {
             <Link
               to="/auth"
               className={`text-sm hover:text-zinc-900 ${
-                isActive("/auth")
-                  ? "text-zinc-900 font-medium"
-                  : "text-zinc-600"
+                isActive('/auth') ? 'text-zinc-900 font-medium' : 'text-zinc-600'
               }`}
             >
-              Sign up / Log in
+              Signup/Login
             </Link>
           )}
         </div>
