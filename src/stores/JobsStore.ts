@@ -43,7 +43,7 @@ export const useJobStore = create<JobsState>()(
       },
 
       // Fetch job by ID
-      fetchJobById: async (id: string) => {
+      fetchJobById: async (id: number) => {
         if (get().isLoading) return;
 
         set({ isLoading: true, error: null }, false, "jobs/fetchJobById/start");
@@ -89,5 +89,5 @@ export const selectIsLoading = (state: JobsState) => state.isLoading;
 export const selectError = (state: JobsState) => state.error;
 
 //selectors to get job by ID from cache/searching through the already-loaded jobs array in the Zustand store
-export const selectJobById = (id: string) => (state: JobsState) =>
+export const selectJobById = (id: number) => (state: JobsState) =>
   state.jobs.find((job) => job.id === id);

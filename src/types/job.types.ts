@@ -1,5 +1,5 @@
 export interface Job {
-  id: number;
+  id?: number;
   title: string;
   company: string;
   location: string;
@@ -25,7 +25,7 @@ export interface JobsState {
 
   // Actions
   fetchJobs: () => Promise<void>;
-  fetchJobById: (id: string) => Promise<void>;
+  fetchJobById: (id: number) => Promise<void>;
   clearError: () => void;
   clearSelectedJob: () => void;
 }

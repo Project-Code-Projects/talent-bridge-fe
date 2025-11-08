@@ -26,26 +26,31 @@ export default function JobDetailsPage() {
   const clearSelectedJob = useJobStore((state) => state.clearSelectedJob);
   const clearError = useJobStore((state) => state.clearError);
 
+  // Parse id to number
+  const jobId = id ? Number(id) : undefined;
+
   // Check if job exists in cache
-  const cachedJob = useJobStore(selectJobById(id || ""));
+  const cachedJob = useJobStore((state) =>
+    jobId ? selectJobById(jobId)(state) : undefined
+  );
 
   useEffect(() => {
-    if (!id) return;
+    if (!jobId) return;
 
     clearError();
 
     // If we have cached job and no selected job, use cached data
     if (cachedJob && !selectedJob) {
       useJobStore.setState({ selectedJob: cachedJob });
-      return; // Don't fetch if we're using cached data
+      return;
     }
 
     // Only fetch if we don't have the job data
-    if (!selectedJob || selectedJob.id !== id) {
-      fetchJobById(id);
+    if (!selectedJob || selectedJob.id !== jobId) {
+      fetchJobById(jobId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]); // Only depend on id
+  }, [jobId]);
 
   useEffect(() => {
     return () => {
@@ -53,25 +58,6 @@ export default function JobDetailsPage() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  //   useEffect(() => {
-  //     if (!id) {
-  //       clearError();
-
-  //       // Use cached job if available, otherwise fetch
-  //       if (cachedJob && !selectedJob) {
-  //         // If we have cached job, use it immediately
-  //         useJobStore.setState({ selectedJob: cachedJob });
-  //       } else {
-  //         // Fetch fresh data
-  //         fetchJobById(id);
-  //       }
-  //     }
-
-  //     return () => {
-  //       clearSelectedJob();
-  //     };
-  //   }, [id, fetchJobById, clearSelectedJob, clearError, cachedJob, selectedJob]);
 
   if (isLoading && !selectedJob) {
     return (
@@ -102,9 +88,9 @@ export default function JobDetailsPage() {
             >
               ← Back to Jobs
             </button>
-            {id && (
+            {jobId && (
               <button
-                onClick={() => fetchJobById(id)}
+                onClick={() => fetchJobById(jobId)}
                 className="inline-flex items-center rounded-xl border border-zinc-300 bg-white px-6 py-3 text-sm font-semibold text-zinc-900 hover:bg-zinc-50 transition-colors"
               >
                 Try Again
