@@ -1,21 +1,21 @@
-import { BrowserRouter, Route, Routes } from 'react-router';
-import './App.css';
-import LandingPage from './pages/Landing/LandingPage';
-import Layout from './components/layout/Layout';
-import JobsPage from './pages/Jobs/JobsPage';
-import JobDetailsPage from './pages/Jobs/JobDetailsPage';
-import DashboardPage from './pages/profile/DashboardPage';
-import ProfileFormPage from './pages/profile/ProfileFormPage';
-import ProfileViewPage from './pages/profile/ProfileViewPage';
-import { useEffect } from 'react';
-import { useAuthStore } from './stores/authStore';
-import Auth from './pages/Auth/Auth';
-import ProtectedRoute from './components/layout/protectedRoute';
-import AdminLayout from './components/admin/adminLayout';
-import AdminDashboard from './components/admin/adminDashboard';
+import { BrowserRouter, Route, Routes } from "react-router";
+import "./App.css";
+import LandingPage from "./pages/Landing/LandingPage";
+import Layout from "./components/layout/Layout";
+import JobsPage from "./pages/Jobs/JobsPage";
+import JobDetailsPage from "./pages/Jobs/JobDetailsPage";
+import DashboardPage from "./pages/profile/DashboardPage";
+import ProfileFormPage from "./pages/profile/ProfileFormPage";
+import ProfileViewPage from "./pages/profile/ProfileViewPage";
+import { useEffect } from "react";
+import { useAuthStore } from "./stores/authStore";
+import Auth from "./pages/Auth/Auth";
+import ProtectedRoute from "./components/layout/protectedRoute";
+import AdminLayout from "./components/admin/adminLayout";
+import AdminDashboard from "./components/admin/adminDashboard";
 
 function App() {
-  const checkAuth = useAuthStore(state => state.checkAuth);
+  const checkAuth = useAuthStore((state) => state.checkAuth);
 
   useEffect(() => {
     checkAuth();
@@ -45,7 +45,7 @@ function App() {
           }
         >
           <Route path="dashboard" element={<AdminDashboard />} />
-          <Route
+          {/* <Route
             path="jobs"
             element={<div className="p-8 text-center text-zinc-600">Jobs Management - Coming Soon</div>}
           />
@@ -60,7 +60,7 @@ function App() {
           <Route
             path="applications/:id"
             element={<div className="p-8 text-center text-zinc-600">Application Details - Coming Soon</div>}
-          />
+          /> */}
         </Route>
       </Routes>
     </BrowserRouter>

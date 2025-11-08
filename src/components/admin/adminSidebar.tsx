@@ -1,8 +1,8 @@
 // components/admin/AdminSidebar.tsx
 
-import { Link, useLocation } from 'react-router';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { Link, useLocation } from "react-router";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
 
 interface SidebarLink {
   name: string;
@@ -11,10 +11,10 @@ interface SidebarLink {
 }
 
 const links: SidebarLink[] = [
-  { name: 'Dashboard', path: '/admin/dashboard', icon: '📊' },
-  { name: 'Jobs', path: '/admin/jobs', icon: '💼' },
-  { name: 'Users', path: '/admin/users', icon: '👥' },
-  { name: 'Applications', path: '/admin/applications', icon: '📝' }
+  { name: "Dashboard", path: "/admin/dashboard", icon: "📊" },
+  { name: "Jobs", path: "/admin/jobs", icon: "💼" },
+  { name: "Users", path: "/admin/users", icon: "👥" },
+  { name: "Applications", path: "/admin/applications", icon: "📝" },
 ];
 
 export default function AdminSidebar() {
@@ -27,7 +27,7 @@ export default function AdminSidebar() {
     <>
       {/* Desktop Sidebar */}
       <motion.aside
-        animate={{ width: isCollapsed ? 80 : 256 }}
+        animate={{ width: isCollapsed ? 80 : 215 }}
         transition={{ duration: 0.3 }}
         className="hidden md:flex fixed left-0 top-14 h-[calc(100vh-3.5rem)] border-r border-zinc-200 bg-white flex-col"
       >
@@ -36,17 +36,19 @@ export default function AdminSidebar() {
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="mx-4 my-4 rounded-lg border border-zinc-300 bg-white p-2 text-zinc-600 hover:bg-zinc-50"
         >
-          {isCollapsed ? '→' : '←'}
+          {isCollapsed ? "→" : "←"}
         </button>
 
         {/* Navigation Links */}
         <nav className="flex-1 space-y-1 px-3">
-          {links.map(link => (
+          {links.map((link) => (
             <Link
               key={link.path}
               to={link.path}
               className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
-                isActive(link.path) ? 'bg-indigo-50 text-indigo-700' : 'text-zinc-700 hover:bg-zinc-100'
+                isActive(link.path)
+                  ? "bg-indigo-50 text-indigo-700"
+                  : "text-zinc-700 hover:bg-zinc-100"
               }`}
             >
               <span className="text-lg">{link.icon}</span>
@@ -54,7 +56,7 @@ export default function AdminSidebar() {
                 {!isCollapsed && (
                   <motion.span
                     initial={{ opacity: 0, width: 0 }}
-                    animate={{ opacity: 1, width: 'auto' }}
+                    animate={{ opacity: 1, width: "auto" }}
                     exit={{ opacity: 0, width: 0 }}
                     transition={{ duration: 0.2 }}
                   >
@@ -92,23 +94,28 @@ export default function AdminSidebar() {
               initial={{ x: -280 }}
               animate={{ x: 0 }}
               exit={{ x: -280 }}
-              transition={{ type: 'spring', damping: 25 }}
+              transition={{ type: "spring", damping: 25 }}
               className="md:hidden fixed left-0 top-0 z-50 h-screen w-64 border-r border-zinc-200 bg-white"
             >
               <div className="flex items-center justify-between border-b border-zinc-200 p-4">
                 <span className="text-lg font-bold">Menu</span>
-                <button onClick={() => setIsCollapsed(true)} className="rounded-lg p-2 text-zinc-600 hover:bg-zinc-100">
+                <button
+                  onClick={() => setIsCollapsed(true)}
+                  className="rounded-lg p-2 text-zinc-600 hover:bg-zinc-100"
+                >
                   ✕
                 </button>
               </div>
               <nav className="space-y-1 p-3">
-                {links.map(link => (
+                {links.map((link) => (
                   <Link
                     key={link.path}
                     to={link.path}
                     onClick={() => setIsCollapsed(true)}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
-                      isActive(link.path) ? 'bg-indigo-50 text-indigo-700' : 'text-zinc-700 hover:bg-zinc-100'
+                      isActive(link.path)
+                        ? "bg-indigo-50 text-indigo-700"
+                        : "text-zinc-700 hover:bg-zinc-100"
                     }`}
                   >
                     <span className="text-lg">{link.icon}</span>
