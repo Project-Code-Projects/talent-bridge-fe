@@ -12,7 +12,7 @@ import { useAuthStore } from './stores/authStore';
 import Auth from './pages/Auth/Auth';
 import ProtectedRoute from './components/layout/protectedRoute';
 import AdminLayout from './components/admin/adminLayout';
-import AdminDashboard from './components/admin/AdminDashboard';
+import AdminDashboard from './components/admin/adminDashboard';
 
 function App() {
   const checkAuth = useAuthStore(state => state.checkAuth);

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import DashboardStatsComponent from './dashboardStats';
-import RecentApplicants from './RecentApplicants';
+import RecentApplicants from './recentApplicants';
 import { adminService } from '../../services/adminService';
 import type { DashboardStats, RecentApplicant } from '../../types/admin.types';
 import { fadeUp, stagger } from '../../utils/animation';
