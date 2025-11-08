@@ -111,13 +111,7 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: "auth-storage", // unique name for localStorage
-      // You can also specify which fields to persist:
-      // partialize: (state) => ({
-      //   user: state.user,
-      //   token: state.token,
-      //   isAuthenticated: state.isAuthenticated
-      // })
+      name: "auth-storage",
     }
   )
 );
