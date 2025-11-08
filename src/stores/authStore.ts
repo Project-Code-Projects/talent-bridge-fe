@@ -31,6 +31,7 @@ export const useAuthStore = create<AuthState>(set => ({
         isLoading: false,
         error: null
       });
+      return loginResponse.user;
     } catch (error) {
       const apiError = error as ApiError;
       const errorMessage = apiError.response?.data?.message || 'Signup failed. Please try again.';
@@ -59,6 +60,7 @@ export const useAuthStore = create<AuthState>(set => ({
         isLoading: false,
         error: null
       });
+      return response.user;
     } catch (error) {
       const apiError = error as ApiError;
       const errorMessage = apiError.response?.data?.message || 'Login failed. Please try again.';

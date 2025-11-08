@@ -1,10 +1,10 @@
-import type { Job } from "../types/job.types";
-import axiosInstance from "./axiosInstance";
+import type { Job } from '../types/job.types';
+import axiosInstance from './api';
 
 export const JobService = {
   // Fetch all jobs
   getAllJobs: async (): Promise<Job[]> => {
-    const response = await axiosInstance.get<Job[]>("/jobs");
+    const response = await axiosInstance.get<Job[]>('/jobs');
     return response.data;
   },
 
@@ -12,5 +12,5 @@ export const JobService = {
   getJobById: async (id: string): Promise<Job> => {
     const response = await axiosInstance.get<Job>(`/jobs/${id}`);
     return response.data;
-  },
+  }
 };

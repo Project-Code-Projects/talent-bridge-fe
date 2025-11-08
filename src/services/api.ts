@@ -1,24 +1,23 @@
-import axios from "axios";
-import type {
-  AxiosError,
-  AxiosInstance,
-  InternalAxiosRequestConfig,
-  AxiosResponse,
-} from "axios";
+import axios from 'axios';
+
+const API_BASE_URL = 'http://localhost:4000/api';
+// change base api port for backend accordingly
+
+import type { AxiosError, AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: "http://localhost:4000/api",
+  baseURL: API_BASE_URL,
   timeout: 10000,
   headers: {
-    "Content-Type": "application/json",
-  },
+    'Content-Type': 'application/json'
+  }
 });
 
 // Request interceptor
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // auth tokens for later
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -27,7 +26,7 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   (error: AxiosError) => {
-    console.error("[API Request Error]", error);
+    console.error('[API Request Error]', error);
     return Promise.reject(error);
   }
 );
@@ -36,9 +35,7 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
     console.log(
-      `[API Response] ${response.config.method?.toUpperCase()} ${
-        response.config.url
-      } - Status: ${response.status}`
+      `[API Response] ${response.config.method?.toUpperCase()} ${response.config.url} - Status: ${response.status}`
     );
     return response;
   },
@@ -46,34 +43,34 @@ axiosInstance.interceptors.response.use(
     // Handle errors globally
     if (error.response) {
       // Server responded with error status
-      console.error(
-        `[API Error] ${error.response.status}:`,
-        error.response.data
-      );
+      console.error(`[API Error] ${error.response.status}:`, error.response.data);
 
       switch (error.response.status) {
         case 401:
           // Handle unauthorized (e.g., redirect to login)
-          console.error("Unauthorized access");
+          console.error('Unauthorized access');
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          window.location.href = '/auth';
           break;
         case 403:
-          console.error("Forbidden access");
+          console.error('Forbidden access');
           break;
         case 404:
-          console.error("Resource not found");
+          console.error('Resource not found');
           break;
         case 500:
-          console.error("Internal server error");
+          console.error('Internal server error');
           break;
         default:
-          console.error("An error occurred");
+          console.error('An error occurred');
       }
     } else if (error.request) {
       // Request made but no response received
-      console.error("[API Error] No response received:", error.request);
+      console.error('[API Error] No response received:', error.request);
     } else {
       // Error in request configuration
-      console.error("[API Error] Request setup error:", error.message);
+      console.error('[API Error] Request setup error:', error.message);
     }
 
     return Promise.reject(error);
