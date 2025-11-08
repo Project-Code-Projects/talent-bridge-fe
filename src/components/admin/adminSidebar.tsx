@@ -27,7 +27,7 @@ export default function AdminSidebar() {
     <>
       {/* Desktop Sidebar */}
       <motion.aside
-        animate={{ width: isCollapsed ? 80 : 215 }}
+        animate={{ width: isCollapsed ? 81 : 215 }}
         transition={{ duration: 0.3 }}
         className="hidden md:flex fixed left-0 top-14 h-[calc(100vh-3.5rem)] border-r border-zinc-200 bg-white flex-col"
       >
