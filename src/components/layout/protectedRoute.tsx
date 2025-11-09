@@ -1,12 +1,15 @@
-import { Navigate } from 'react-router';
-import { useAuthStore } from '../../stores/authStore';
+import { Navigate } from "react-router";
+import { useAuthStore } from "../../stores/authStore";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requireAdmin?: boolean;
 }
 
-export default function ProtectedRoute({ children, requireAdmin = false }: ProtectedRouteProps) {
+export default function ProtectedRoute({
+  children,
+  requireAdmin = false,
+}: ProtectedRouteProps) {
   const { isAuthenticated, user } = useAuthStore();
 
   // Not authenticated - redirect to auth page

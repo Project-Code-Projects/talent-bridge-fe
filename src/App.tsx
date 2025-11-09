@@ -13,6 +13,8 @@ import Auth from "./pages/Auth/Auth";
 import ProtectedRoute from "./components/layout/protectedRoute";
 import AdminLayout from "./components/admin/adminLayout";
 import AdminDashboard from "./components/admin/adminDashboard";
+import AdminJobsPage from "./pages/Admin/AdminJobsPage";
+import AdminJobEditPage from "./pages/Admin/AdminJobEditPage";
 
 function App() {
   const checkAuth = useAuthStore((state) => state.checkAuth);
@@ -45,6 +47,8 @@ function App() {
           }
         >
           <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="jobs" element={<AdminJobsPage />} />
+          <Route path="jobs/:id/edit" element={<AdminJobEditPage />} />
           {/* <Route
             path="jobs"
             element={<div className="p-8 text-center text-zinc-600">Jobs Management - Coming Soon</div>}
