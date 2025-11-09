@@ -1,26 +1,8 @@
-import { AxiosError } from "axios";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import axiosInstance from "../services/api";
 import type { AdminJobState } from "../types/adminJob.types";
 import type { Job } from "../types/job.types";
-
-const handleAxiosError = (error: unknown): string => {
-  if (error instanceof AxiosError) {
-    if (error.response) {
-      return (
-        error.response.data?.message ||
-        error.response.statusText ||
-        "An error occurred"
-      );
-    } else if (error.request) {
-      return "No response from server. Please check your connection.";
-    } else {
-      return error.message || "Failed to make request";
-    }
-  }
-  return "An unexpected error occurred";
-};
+import { adminJobService } from "../services/adminJobService";
 
 export const useAdminJobStore = create<AdminJobState>()(
   devtools(
@@ -41,11 +23,11 @@ export const useAdminJobStore = create<AdminJobState>()(
         );
 
         try {
-          const response = await axiosInstance.get<Job[]>("/jobs");
+          const jobs = await adminJobService.fetchAllJobs();
 
           set(
             {
-              jobs: response.data,
+              jobs,
               isLoading: false,
               error: null,
             },
@@ -53,7 +35,10 @@ export const useAdminJobStore = create<AdminJobState>()(
             "adminJobs/fetchAll/success"
           );
         } catch (error) {
-          const errorMessage = handleAxiosError(error);
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : "An unexpected error occurred";
 
           set(
             {
@@ -64,8 +49,6 @@ export const useAdminJobStore = create<AdminJobState>()(
             false,
             "adminJobs/fetchAll/error"
           );
-
-          console.error("Failed to fetch jobs:", error);
         }
       },
 
@@ -80,11 +63,11 @@ export const useAdminJobStore = create<AdminJobState>()(
         );
 
         try {
-          const response = await axiosInstance.get<Job>(`/jobs/${id}`);
+          const selectedJob = await adminJobService.fetchJobById(id);
 
           set(
             {
-              selectedJob: response.data,
+              selectedJob,
               isLoading: false,
               error: null,
             },
@@ -92,7 +75,10 @@ export const useAdminJobStore = create<AdminJobState>()(
             "adminJobs/fetchById/success"
           );
         } catch (error) {
-          const errorMessage = handleAxiosError(error);
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : "An unexpected error occurred";
 
           set(
             {
@@ -103,8 +89,6 @@ export const useAdminJobStore = create<AdminJobState>()(
             false,
             "adminJobs/fetchById/error"
           );
-
-          console.error(`Failed to fetch job with ID ${id}:`, error);
         }
       },
 
@@ -115,7 +99,7 @@ export const useAdminJobStore = create<AdminJobState>()(
         set({ isLoading: true, error: null }, false, "adminJobs/update/start");
 
         try {
-          const response = await axiosInstance.put(`/jobs/${id}`, data);
+          const updatedJob = await adminJobService.updateJob(id, data);
 
           // Update the job in the list
           const updatedJobs = get().jobs.map((job) =>
@@ -125,7 +109,7 @@ export const useAdminJobStore = create<AdminJobState>()(
           set(
             {
               jobs: updatedJobs,
-              selectedJob: response.data.updated || null,
+              selectedJob: updatedJob,
               isLoading: false,
               error: null,
             },
@@ -133,7 +117,10 @@ export const useAdminJobStore = create<AdminJobState>()(
             "adminJobs/update/success"
           );
         } catch (error) {
-          const errorMessage = handleAxiosError(error);
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : "An unexpected error occurred";
 
           set(
             {
@@ -143,8 +130,6 @@ export const useAdminJobStore = create<AdminJobState>()(
             false,
             "adminJobs/update/error"
           );
-
-          console.error(`Failed to update job with ID ${id}:`, error);
           throw error;
         }
       },
@@ -156,7 +141,7 @@ export const useAdminJobStore = create<AdminJobState>()(
         set({ isLoading: true, error: null }, false, "adminJobs/delete/start");
 
         try {
-          await axiosInstance.delete(`/jobs/${id}`);
+          await adminJobService.deleteJob(id);
 
           // Remove the job from the list
           const filteredJobs = get().jobs.filter((job) => job.id !== id);
@@ -171,7 +156,10 @@ export const useAdminJobStore = create<AdminJobState>()(
             "adminJobs/delete/success"
           );
         } catch (error) {
-          const errorMessage = handleAxiosError(error);
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : "An unexpected error occurred";
 
           set(
             {
@@ -181,8 +169,6 @@ export const useAdminJobStore = create<AdminJobState>()(
             false,
             "adminJobs/delete/error"
           );
-
-          console.error(`Failed to delete job with ID ${id}:`, error);
           throw error;
         }
       },
