@@ -20,53 +20,37 @@ const handleAxiosError = (error: unknown): string => {
 };
 
 export const adminJobService = {
-  // Fetch all jobs (admin view)
-  fetchAllJobs: async (): Promise<Job[]> => {
-    try {
-      const response = await axiosInstance.get<Job[]>("/jobs");
-      return response.data;
-    } catch (error) {
-      const errorMessage = handleAxiosError(error);
-      console.error("Failed to fetch jobs:", error);
-      throw new Error(errorMessage);
-    }
+  // Fetch all jobs with pagination
+  fetchAllJobs: async (page?: number, limit?: number) => {
+    const response = await axiosInstance.get<{
+      jobs: Job[];
+      total: number;
+      totalPages: number;
+      currentPage: number;
+    }>("/jobs", {
+      params: { page, limit },
+    });
+    return response;
   },
 
   // Fetch job by ID
-  fetchJobById: async (id: number): Promise<Job> => {
-    try {
-      const response = await axiosInstance.get<Job>(`/jobs/${id}`);
-      return response.data;
-    } catch (error) {
-      const errorMessage = handleAxiosError(error);
-      console.error(`Failed to fetch job with ID ${id}:`, error);
-      throw new Error(errorMessage);
-    }
+  fetchJobById: async (id: number) => {
+    const response = await axiosInstance.get<Job>(`/jobs/${id}`);
+    return response;
   },
 
   // Update job
-  updateJob: async (id: number, data: Partial<Job>): Promise<Job> => {
-    try {
-      const response = await axiosInstance.put<{ updated: Job }>(
-        `/jobs/${id}`,
-        data
-      );
-      return response.data.updated;
-    } catch (error) {
-      const errorMessage = handleAxiosError(error);
-      console.error(`Failed to update job with ID ${id}:`, error);
-      throw new Error(errorMessage);
-    }
+  updateJob: async (id: number, data: Partial<Job>) => {
+    const response = await axiosInstance.put(`/jobs/${id}`, data);
+    return response;
   },
 
   // Delete job
-  deleteJob: async (id: number): Promise<void> => {
-    try {
-      await axiosInstance.delete(`/jobs/${id}`);
-    } catch (error) {
-      const errorMessage = handleAxiosError(error);
-      console.error(`Failed to delete job with ID ${id}:`, error);
-      throw new Error(errorMessage);
-    }
+  deleteJob: async (id: number) => {
+    const response = await axiosInstance.delete(`/jobs/${id}`);
+    return response;
   },
+
+  // Export error handler for use in store
+  handleAxiosError,
 };

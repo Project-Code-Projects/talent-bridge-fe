@@ -15,6 +15,7 @@ import AdminLayout from "./components/admin/adminLayout";
 import AdminDashboard from "./components/admin/adminDashboard";
 import AdminJobsPage from "./pages/Admin/AdminJobsPage";
 import AdminJobEditPage from "./pages/Admin/AdminJobEditPage";
+import AdminJobCreatePage from "./pages/Admin/AdminJobCreatePage";
 
 function App() {
   const checkAuth = useAuthStore((state) => state.checkAuth);
@@ -48,6 +49,7 @@ function App() {
         >
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="jobs" element={<AdminJobsPage />} />
+          <Route path="jobs/create" element={<AdminJobCreatePage />} />
           <Route path="jobs/:id/edit" element={<AdminJobEditPage />} />
           {/* <Route
             path="jobs"

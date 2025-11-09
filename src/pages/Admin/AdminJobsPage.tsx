@@ -7,22 +7,35 @@ import EditIcon from "../../assets/EditIcon.png";
 import DeleteIcon from "../../assets/DeleteIcon.png";
 
 export default function AdminJobsPage() {
-  const { jobs, isLoading, error, fetchAllJobs, deleteJob, clearError } =
-    useAdminJobStore();
+  const {
+    jobs,
+    pagination,
+    isLoading,
+    error,
+    fetchAllJobs,
+    deleteJob,
+    clearError,
+  } = useAdminJobStore();
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
 
   useEffect(() => {
     clearError();
-    fetchAllJobs();
+    fetchAllJobs(1, 10); // Load first page with 10 items
   }, [fetchAllJobs, clearError]);
 
   const handleDelete = async (id: number) => {
     try {
       await deleteJob(id);
       setDeleteConfirm(null);
+      // Reload current page after deletion
+      fetchAllJobs(pagination.currentPage, pagination.limit);
     } catch (error) {
       console.error("Delete failed:", error);
     }
+  };
+
+  const handlePageChange = (newPage: number) => {
+    fetchAllJobs(newPage, pagination.limit);
   };
 
   if (isLoading && jobs.length === 0) {
@@ -51,7 +64,9 @@ export default function AdminJobsPage() {
         >
           <div>
             <h1 className="text-3xl font-bold text-zinc-900">Job Postings</h1>
-            <p className="mt-2 text-zinc-600">Manage all job listings</p>
+            <p className="mt-2 text-zinc-600">
+              Showing {jobs.length} of {pagination.total} jobs
+            </p>
           </div>
           <Link
             to="/admin/jobs/create"
@@ -99,111 +114,148 @@ export default function AdminJobsPage() {
               </Link>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-zinc-50 border-b border-zinc-200">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-600 uppercase tracking-wider">
-                      Job Title
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-600 uppercase tracking-wider">
-                      Company
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-600 uppercase tracking-wider">
-                      Location
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-600 uppercase tracking-wider">
-                      Salary
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-600 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-600 uppercase tracking-wider">
-                      Deadline
-                    </th>
-                    <th className="px-6 py-4 text-right text-xs font-semibold text-zinc-600 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-zinc-200">
-                  {jobs.map((job) => (
-                    <tr
-                      key={job.id}
-                      className="hover:bg-zinc-50 transition-colors"
-                    >
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div>
-                            <p className="font-medium text-zinc-900">
-                              {job.title}
-                            </p>
-                            <p className="text-sm text-zinc-500">
-                              {job.employmentType}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-zinc-700">
-                        {job.company}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-zinc-700">
-                        {job.location || "Remote"}
-                      </td>
-                      <td className="px-6 py-4 text-sm font-medium text-blue-600">
-                        {job.salaryRange || "N/A"}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${
-                            job.isActive
-                              ? "bg-green-100 text-green-700"
-                              : "bg-red-100 text-red-700"
-                          }`}
-                        >
-                          {job.isActive ? job.hiringStatus : "Inactive"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-zinc-700">
-                        {job.deadline
-                          ? new Date(job.deadline).toLocaleDateString("en-US", {
-                              month: "short",
-                              day: "numeric",
-                              year: "numeric",
-                            })
-                          : "No deadline"}
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Link
-                            to={`/admin/jobs/${job.id}/edit`}
-                            className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 hover:bg-blue-100 transition-colors"
-                          >
-                            <img
-                              src={EditIcon}
-                              alt="edit"
-                              className="w-5 h-5"
-                            />{" "}
-                            Edit
-                          </Link>
-                          <button
-                            onClick={() => setDeleteConfirm(job.id!)}
-                            className="inline-flex items-center gap-1 rounded-lg bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100 transition-colors"
-                          >
-                            <img
-                              src={DeleteIcon}
-                              alt="edit"
-                              className="w-5 h-5"
-                            />{" "}
-                            Delete
-                          </button>
-                        </div>
-                      </td>
+            <>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-zinc-50 border-b border-zinc-200">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-600 uppercase tracking-wider">
+                        Job Title
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-600 uppercase tracking-wider">
+                        Company
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-600 uppercase tracking-wider">
+                        Location
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-600 uppercase tracking-wider">
+                        Salary
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-600 uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-600 uppercase tracking-wider">
+                        Deadline
+                      </th>
+                      <th className="px-6 py-4 text-right text-xs font-semibold text-zinc-600 uppercase tracking-wider">
+                        Actions
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-zinc-200">
+                    {jobs.map((job) => (
+                      <tr
+                        key={job.id}
+                        className="hover:bg-zinc-50 transition-colors"
+                      >
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div>
+                              <p className="font-medium text-zinc-900">
+                                {job.title}
+                              </p>
+                              <p className="text-sm text-zinc-500">
+                                {job.employmentType}
+                              </p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-zinc-700">
+                          {job.company}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-zinc-700">
+                          {job.location || "Remote"}
+                        </td>
+                        <td className="px-6 py-4 text-sm font-medium text-blue-600">
+                          {job.salaryRange || "N/A"}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${
+                              job.isActive
+                                ? "bg-green-100 text-green-700"
+                                : "bg-red-100 text-red-700"
+                            }`}
+                          >
+                            {job.isActive ? job.hiringStatus : "Inactive"}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-zinc-700">
+                          {job.deadline
+                            ? new Date(job.deadline).toLocaleDateString(
+                                "en-US",
+                                {
+                                  month: "short",
+                                  day: "numeric",
+                                  year: "numeric",
+                                }
+                              )
+                            : "No deadline"}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <Link
+                              to={`/admin/jobs/${job.id}/edit`}
+                              className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 hover:bg-blue-100 transition-colors"
+                            >
+                              <img
+                                src={EditIcon}
+                                alt="edit"
+                                className="w-5 h-5"
+                              />{" "}
+                              Edit
+                            </Link>
+                            <button
+                              onClick={() => setDeleteConfirm(job.id!)}
+                              className="inline-flex items-center gap-1 rounded-lg bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100 transition-colors"
+                            >
+                              <img
+                                src={DeleteIcon}
+                                alt="delete"
+                                className="w-5 h-5"
+                              />{" "}
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination */}
+              {pagination.totalPages > 1 && (
+                <div className="border-t border-zinc-200 px-6 py-4 flex items-center justify-between">
+                  <div className="text-sm text-zinc-600">
+                    Page {pagination.currentPage} of {pagination.totalPages}
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() =>
+                        handlePageChange(pagination.currentPage - 1)
+                      }
+                      disabled={pagination.currentPage === 1 || isLoading}
+                      className="px-4 py-2 rounded-lg border border-zinc-300 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Previous
+                    </button>
+                    <button
+                      onClick={() =>
+                        handlePageChange(pagination.currentPage + 1)
+                      }
+                      disabled={
+                        pagination.currentPage === pagination.totalPages ||
+                        isLoading
+                      }
+                      className="px-4 py-2 rounded-lg bg-indigo-600 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </motion.div>
 

@@ -11,9 +11,15 @@ export const useAdminJobStore = create<AdminJobState>()(
       selectedJob: null,
       isLoading: false,
       error: null,
+      pagination: {
+        total: 0,
+        totalPages: 0,
+        currentPage: 1,
+        limit: 10,
+      },
 
-      // Fetch all jobs (admin view)
-      fetchAllJobs: async () => {
+      // fetch jobs with pagination here
+      fetchAllJobs: async (page = 1, limit = 10) => {
         if (get().isLoading) return;
 
         set(
@@ -23,11 +29,17 @@ export const useAdminJobStore = create<AdminJobState>()(
         );
 
         try {
-          const jobs = await adminJobService.fetchAllJobs();
+          const response = await adminJobService.fetchAllJobs(page, limit);
 
           set(
             {
-              jobs,
+              jobs: response.data.jobs,
+              pagination: {
+                total: response.data.total,
+                totalPages: response.data.totalPages,
+                currentPage: response.data.currentPage,
+                limit,
+              },
               isLoading: false,
               error: null,
             },
@@ -35,10 +47,7 @@ export const useAdminJobStore = create<AdminJobState>()(
             "adminJobs/fetchAll/success"
           );
         } catch (error) {
-          const errorMessage =
-            error instanceof Error
-              ? error.message
-              : "An unexpected error occurred";
+          const errorMessage = adminJobService.handleAxiosError(error);
 
           set(
             {
@@ -49,6 +58,8 @@ export const useAdminJobStore = create<AdminJobState>()(
             false,
             "adminJobs/fetchAll/error"
           );
+
+          console.error("Failed to fetch jobs:", error);
         }
       },
 
@@ -63,11 +74,11 @@ export const useAdminJobStore = create<AdminJobState>()(
         );
 
         try {
-          const selectedJob = await adminJobService.fetchJobById(id);
+          const response = await adminJobService.fetchJobById(id);
 
           set(
             {
-              selectedJob,
+              selectedJob: response.data,
               isLoading: false,
               error: null,
             },
@@ -75,10 +86,7 @@ export const useAdminJobStore = create<AdminJobState>()(
             "adminJobs/fetchById/success"
           );
         } catch (error) {
-          const errorMessage =
-            error instanceof Error
-              ? error.message
-              : "An unexpected error occurred";
+          const errorMessage = adminJobService.handleAxiosError(error);
 
           set(
             {
@@ -89,6 +97,8 @@ export const useAdminJobStore = create<AdminJobState>()(
             false,
             "adminJobs/fetchById/error"
           );
+
+          console.error(`Failed to fetch job with ID ${id}:`, error);
         }
       },
 
@@ -99,7 +109,7 @@ export const useAdminJobStore = create<AdminJobState>()(
         set({ isLoading: true, error: null }, false, "adminJobs/update/start");
 
         try {
-          const updatedJob = await adminJobService.updateJob(id, data);
+          const response = await adminJobService.updateJob(id, data);
 
           // Update the job in the list
           const updatedJobs = get().jobs.map((job) =>
@@ -109,7 +119,7 @@ export const useAdminJobStore = create<AdminJobState>()(
           set(
             {
               jobs: updatedJobs,
-              selectedJob: updatedJob,
+              selectedJob: response.data.updated || null,
               isLoading: false,
               error: null,
             },
@@ -117,10 +127,7 @@ export const useAdminJobStore = create<AdminJobState>()(
             "adminJobs/update/success"
           );
         } catch (error) {
-          const errorMessage =
-            error instanceof Error
-              ? error.message
-              : "An unexpected error occurred";
+          const errorMessage = adminJobService.handleAxiosError(error);
 
           set(
             {
@@ -130,6 +137,8 @@ export const useAdminJobStore = create<AdminJobState>()(
             false,
             "adminJobs/update/error"
           );
+
+          console.error(`Failed to update job with ID ${id}:`, error);
           throw error;
         }
       },
@@ -149,6 +158,10 @@ export const useAdminJobStore = create<AdminJobState>()(
           set(
             {
               jobs: filteredJobs,
+              pagination: {
+                ...get().pagination,
+                total: get().pagination.total - 1,
+              },
               isLoading: false,
               error: null,
             },
@@ -156,10 +169,7 @@ export const useAdminJobStore = create<AdminJobState>()(
             "adminJobs/delete/success"
           );
         } catch (error) {
-          const errorMessage =
-            error instanceof Error
-              ? error.message
-              : "An unexpected error occurred";
+          const errorMessage = adminJobService.handleAxiosError(error);
 
           set(
             {
@@ -169,16 +179,16 @@ export const useAdminJobStore = create<AdminJobState>()(
             false,
             "adminJobs/delete/error"
           );
+
+          console.error(`Failed to delete job with ID ${id}:`, error);
           throw error;
         }
       },
 
-      // Clear error state
       clearError: () => {
         set({ error: null }, false, "adminJobs/clearError");
       },
 
-      // Clear selected job
       clearSelectedJob: () => {
         set({ selectedJob: null }, false, "adminJobs/clearSelectedJob");
       },
