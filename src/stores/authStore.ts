@@ -4,6 +4,7 @@ import { create } from "zustand";
 import { authService } from "../services/authService";
 import type { ApiError, AuthState } from "../types/auth.types";
 import { persist } from "zustand/middleware";
+import { isTokenExpired } from "../utils/token";
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -97,13 +98,22 @@ export const useAuthStore = create<AuthState>()(
         const token = authService.getToken();
         const user = authService.getUser();
 
-        if (token && user) {
+        if (!token || !user || isTokenExpired(token)) {
+          authService.logout();
           set({
-            user,
-            token,
-            isAuthenticated: true,
+            user: null,
+            token: null,
+            isAuthenticated: false,
+            error: null,
           });
+          return;
         }
+
+        set({
+          user,
+          token,
+          isAuthenticated: true,
+        });
       },
     }),
     {
