@@ -2,28 +2,34 @@ import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { fadeUp, stagger } from "../../utils/animation";
 import Footer from "../../components/landing-page/Footer";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   selectError,
   selectIsLoading,
   selectJobs,
+  selectPagination,
   useJobStore,
 } from "../../stores/JobsStore";
 import LocationIcon from "../../assets/LocationIcon.png";
 
 export default function JobsPage() {
+  const [params, setParams] = useSearchParams();
+  const pageParam = Math.max(1, Number(params.get("page") || 1));
+  const limit = 10; // you can expose a dropdown to change this
+
   const jobs = useJobStore(selectJobs);
   const isLoading = useJobStore(selectIsLoading);
   const error = useJobStore(selectError);
-  const fetchJobs = useJobStore((state) => state.fetchJobs);
-  const clearError = useJobStore((state) => state.clearError);
+  const { total, totalPages, currentPage } = useJobStore(selectPagination);
+  const fetchJobs = useJobStore((s) => s.fetchJobs);
+  const clearError = useJobStore((s) => s.clearError);
 
   useEffect(() => {
-    // Clear any previous errors
     clearError();
-    // Fetch jobs on mount
-    fetchJobs();
-  }, [fetchJobs, clearError]);
+    fetchJobs(pageParam, limit);
+  }, [pageParam, limit, fetchJobs, clearError]);
+
+  const goTo = (p: number) => setParams({ page: String(p) });
 
   if (isLoading) {
     return (
@@ -49,7 +55,7 @@ export default function JobsPage() {
           <p className="text-zinc-600 mb-6">{error}</p>
           <div className="flex gap-3 justify-center">
             <button
-              onClick={() => fetchJobs()}
+              onClick={() => fetchJobs(pageParam, limit)}
               className="inline-flex items-center rounded-xl bg-zinc-900 px-6 py-3 text-sm font-semibold text-white shadow hover:bg-zinc-800 transition-colors"
             >
               Try Again
@@ -75,12 +81,11 @@ export default function JobsPage() {
             animate={{ opacity: 1, y: 0 }}
             className="mb-12"
           >
-            <h1 className="text-4xl font-bold tracking-tight mb-4">
+            <h1 className="text-4xl font-bold tracking-tight mb-2">
               Available Positions
             </h1>
             <p className="text-lg text-zinc-600">
-              {jobs.length} {jobs.length === 1 ? "job" : "jobs"} available •
-              Updated regularly
+              Showing page {currentPage} of {totalPages} • {total} total jobs
             </p>
           </motion.div>
 
@@ -125,7 +130,7 @@ export default function JobsPage() {
                         src={LocationIcon}
                         alt="location"
                         className="w-5 h-5"
-                      />{" "}
+                      />
                       {job.location}
                       <span>•</span>
                       <span>{job.employmentType}</span>
@@ -140,6 +145,29 @@ export default function JobsPage() {
                 </motion.div>
               ))}
             </motion.div>
+          )}
+
+          {/* Pagination controls */}
+          {totalPages > 1 && (
+            <div className="mt-10 flex items-center justify-center gap-3">
+              <button
+                className="rounded-lg border px-3 py-2 disabled:opacity-50"
+                disabled={currentPage <= 1}
+                onClick={() => goTo(currentPage - 1)}
+              >
+                ← Prev
+              </button>
+              <span className="text-sm text-zinc-600">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                className="rounded-lg border px-3 py-2 disabled:opacity-50"
+                disabled={currentPage >= totalPages}
+                onClick={() => goTo(currentPage + 1)}
+              >
+                Next →
+              </button>
+            </div>
           )}
         </div>
       </section>

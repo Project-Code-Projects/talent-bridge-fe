@@ -1,38 +1,59 @@
-import axiosInstance from './api';
+import axiosInstance from "./api";
 
-import type { DashboardStats, RecentApplicant, Application, Job, User, PaginationParams } from '../types/admin.types';
+import type {
+  DashboardStats,
+  RecentApplicant,
+  Application,
+  Job,
+  PaginationParams,
+} from "../types/admin.types";
+import type { User } from "../types/user.types";
 
 export const adminService = {
   // Dashboard Stats
   getDashboardStats: async (): Promise<DashboardStats> => {
-    const response = await axiosInstance.get<DashboardStats>('/admin/stats');
+    const response = await axiosInstance.get<DashboardStats>("/admin/stats");
     return response.data;
   },
 
   // Recent Applicants
   getRecentApplicants: async (limit = 10): Promise<RecentApplicant[]> => {
-    const response = await axiosInstance.get<RecentApplicant[]>('/admin/applications/recent', {
-      params: { limit }
-    });
+    const response = await axiosInstance.get<RecentApplicant[]>(
+      "/admin/applications/recent",
+      {
+        params: { limit },
+      }
+    );
     return response.data;
   },
 
   // Applications Management
-  getApplications: async (params: PaginationParams): Promise<{ applications: Application[]; total: number }> => {
-    const response = await axiosInstance.get('/admin/applications', { params });
+  getApplications: async (
+    params: PaginationParams
+  ): Promise<{ applications: Application[]; total: number }> => {
+    const response = await axiosInstance.get("/admin/applications", { params });
     return response.data;
   },
 
   getApplicationById: async (id: number): Promise<Application> => {
-    const response = await axiosInstance.get<Application>(`/admin/applications/${id}`);
+    const response = await axiosInstance.get<Application>(
+      `/admin/applications/${id}`
+    );
     return response.data;
   },
 
-  updateApplicationStatus: async (id: number, status: string, comment?: string): Promise<Application> => {
-    const response = await axiosInstance.patch<Application>(`/admin/applications/${id}/status`, {
-      status,
-      comment
-    });
+  updateApplicationStatus: async (
+    id: number,
+    status: string,
+    comment?: string
+  ): Promise<Application> => {
+    const response = await axiosInstance.patch<Application>(
+      `/admin/applications/${id}/status`,
+      {
+        status,
+        comment,
+      }
+    );
     return response.data;
   },
 
@@ -41,8 +62,10 @@ export const adminService = {
   },
 
   // Jobs Management (Placeholder for future)
-  getJobs: async (params: PaginationParams): Promise<{ jobs: Job[]; total: number }> => {
-    const response = await axiosInstance.get('/admin/jobs', { params });
+  getJobs: async (
+    params: PaginationParams
+  ): Promise<{ jobs: Job[]; total: number }> => {
+    const response = await axiosInstance.get("/admin/jobs", { params });
     return response.data;
   },
 
@@ -52,7 +75,7 @@ export const adminService = {
   },
 
   createJob: async (jobData: Partial<Job>): Promise<Job> => {
-    const response = await axiosInstance.post<Job>('/admin/jobs', jobData);
+    const response = await axiosInstance.post<Job>("/admin/jobs", jobData);
     return response.data;
   },
 
@@ -66,8 +89,10 @@ export const adminService = {
   },
 
   // Users Management (Placeholder for future)
-  getUsers: async (params: PaginationParams): Promise<{ users: User[]; total: number }> => {
-    const response = await axiosInstance.get('/admin/users', { params });
+  getUsers: async (
+    params: PaginationParams
+  ): Promise<{ users: User[]; total: number }> => {
+    const response = await axiosInstance.get("/admin/users", { params });
     return response.data;
   },
 
@@ -78,5 +103,5 @@ export const adminService = {
 
   deleteUser: async (id: number): Promise<void> => {
     await axiosInstance.delete(`/admin/users/${id}`);
-  }
+  },
 };

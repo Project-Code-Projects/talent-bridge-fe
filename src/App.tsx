@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import LandingPage from "./pages/Landing/LandingPage";
 import Layout from "./components/layout/Layout";
@@ -16,6 +16,9 @@ import AdminDashboard from "./components/admin/adminDashboard";
 import AdminJobsPage from "./pages/Admin/AdminJobsPage";
 import AdminJobEditPage from "./pages/Admin/AdminJobEditPage";
 import AdminJobCreatePage from "./pages/Admin/AdminJobCreatePage";
+import AdminUsersPage from "./pages/Admin/AdminUsersPage";
+import AdminUserProfilePage from "./pages/Admin/AdminUsersProfilePage";
+import AdminUserProfileEditPage from "./pages/Admin/AdminUserProfileEditPage";
 
 function App() {
   const checkAuth = useAuthStore((state) => state.checkAuth);
@@ -26,7 +29,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Client Routes */}
+        {/* client routes */}
         <Route path="/" element={<Layout />}>
           <Route index element={<LandingPage />} />
           <Route path="jobs" element={<JobsPage />} />
@@ -38,7 +41,7 @@ function App() {
           <Route path="profile/edit" element={<ProfileFormPage />} />
         </Route>
 
-        {/* Admin Routes */}
+        {/* admin routes */}
         <Route
           path="admin"
           element={
@@ -47,10 +50,16 @@ function App() {
             </ProtectedRoute>
           }
         >
+          {/* job management */}
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="jobs" element={<AdminJobsPage />} />
           <Route path="jobs/create" element={<AdminJobCreatePage />} />
           <Route path="jobs/:id/edit" element={<AdminJobEditPage />} />
+
+          {/* user management */}
+          <Route path="users" element={<AdminUsersPage />} />
+          <Route path="users/:id" element={<AdminUserProfilePage />} />
+          <Route path="users/:id/edit" element={<AdminUserProfileEditPage />} />
           {/* <Route
             path="jobs"
             element={<div className="p-8 text-center text-zinc-600">Jobs Management - Coming Soon</div>}

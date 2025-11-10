@@ -7,7 +7,6 @@ import { persist } from "zustand/middleware";
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    // ← Wrap with persist middleware
     (set) => ({
       user: null,
       token: null,
@@ -21,10 +20,8 @@ export const useAuthStore = create<AuthState>()(
         try {
           await authService.signup(name, email, password);
 
-          // After signup, automatically log them in
           const loginResponse = await authService.login(email, password);
 
-          // Store token and user in localStorage
           localStorage.setItem("token", loginResponse.token);
           localStorage.setItem("user", JSON.stringify(loginResponse.user));
 
@@ -55,7 +52,6 @@ export const useAuthStore = create<AuthState>()(
         try {
           const response = await authService.login(email, password);
 
-          // Store token and user in localStorage
           localStorage.setItem("token", response.token);
           localStorage.setItem("user", JSON.stringify(response.user));
 

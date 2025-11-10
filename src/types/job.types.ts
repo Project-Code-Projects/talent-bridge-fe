@@ -1,5 +1,7 @@
+import type { PaginationMeta } from "./paginationMeta.types";
+
 export interface Job {
-  id?: number;
+  id: number;
   title: string;
   company: string;
   location: string;
@@ -17,14 +19,22 @@ export interface Job {
   updatedAt?: string;
 }
 
+export interface JobsResponse {
+  jobs: Job[];
+  total: number;
+  totalPages: number;
+  currentPage: number;
+}
+
 export interface JobsState {
   jobs: Job[];
   selectedJob: Job | null;
   isLoading: boolean;
   error: string | null;
+  pagination: PaginationMeta;
 
   // Actions
-  fetchJobs: () => Promise<void>;
+  fetchJobs: (page?: number, limit?: number) => Promise<void>;
   fetchJobById: (id: number) => Promise<void>;
   clearError: () => void;
   clearSelectedJob: () => void;

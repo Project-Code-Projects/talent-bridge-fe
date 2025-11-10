@@ -22,7 +22,7 @@ export interface RecentApplicant {
   id: number;
   applicantName: string;
   jobTitle: string;
-  currentStage: 'Received' | 'Shortlisted' | 'Rejected' | 'Hired';
+  currentStage: "Received" | "Shortlisted" | "Rejected" | "Hired";
   appliedDate: string;
 }
 
@@ -30,7 +30,7 @@ export interface Application {
   id: number;
   userId: number;
   jobId: number;
-  status: 'Received' | 'Shortlisted' | 'Rejected' | 'Hired';
+  status: "Received" | "Shortlisted" | "Rejected" | "Hired";
   coverLetter?: string;
   resumeUrl?: string;
   appliedDate: string;
@@ -64,17 +64,17 @@ export interface Job {
   description: string;
   requirements: string;
   salary?: string;
-  status: 'Active' | 'Closed';
+  status: "Active" | "Closed";
   createdAt: string;
 }
 
-export interface User {
-  id: number;
-  name: string;
-  email: string;
-  roleId: number;
-  createdAt: string;
-}
+// export interface User {
+//   id: number;
+//   name: string;
+//   email: string;
+//   roleId: number;
+//   createdAt: string;
+// }
 
 export interface PaginationParams {
   page: number;

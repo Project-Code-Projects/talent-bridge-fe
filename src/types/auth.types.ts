@@ -1,11 +1,13 @@
-export interface User {
-  id: number;
-  name: string;
-  email: string;
-  roleId: number;
-  createdAt?: string;
-  updatedAt?: string;
-}
+// export interface User {
+//   id: number;
+//   name: string;
+//   email: string;
+//   roleId: number;
+//   createdAt?: string;
+//   updatedAt?: string;
+// }
+
+import type { User } from "./user.types";
 
 export interface SignupRequest {
   name: string;
