@@ -1,4 +1,3 @@
-import React from "react";
 import type { TProfile } from "../../types/profile.types";
 
 export default function ProfileSummary({ profile }: { profile: TProfile }) {

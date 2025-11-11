@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import LandingPage from "./pages/Landing/LandingPage";
 import Layout from "./components/layout/Layout";
@@ -10,6 +10,15 @@ import ProfileViewPage from "./pages/profile/ProfileViewPage";
 import { useEffect } from "react";
 import { useAuthStore } from "./stores/authStore";
 import Auth from "./pages/Auth/Auth";
+import ProtectedRoute from "./components/layout/protectedRoute";
+import AdminLayout from "./components/admin/adminLayout";
+import AdminDashboard from "./components/admin/adminDashboard";
+import AdminJobsPage from "./pages/Admin/AdminJobsPage";
+import AdminJobEditPage from "./pages/Admin/AdminJobEditPage";
+import AdminJobCreatePage from "./pages/Admin/AdminJobCreatePage";
+import AdminUsersPage from "./pages/Admin/AdminUsersPage";
+import AdminUserProfilePage from "./pages/Admin/AdminUsersProfilePage";
+import AdminUserProfileEditPage from "./pages/Admin/AdminUserProfileEditPage";
 
 function App() {
   const checkAuth = useAuthStore((state) => state.checkAuth);
@@ -17,19 +26,56 @@ function App() {
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
-
   return (
     <BrowserRouter>
       <Routes>
+        {/* client routes */}
         <Route path="/" element={<Layout />}>
           <Route index element={<LandingPage />} />
           <Route path="jobs" element={<JobsPage />} />
           <Route path="jobs/:id" element={<JobDetailsPage />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/profile" element={<ProfileViewPage />} />
-          <Route path="/profile/setup" element={<ProfileFormPage />} />
-          <Route path="/profile/edit" element={<ProfileFormPage />} />
+          <Route path="auth" element={<Auth />} />
+          <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="profile" element={<ProfileViewPage />} />
+          <Route path="profile/setup" element={<ProfileFormPage />} />
+          <Route path="profile/edit" element={<ProfileFormPage />} />
+        </Route>
+
+        {/* admin routes */}
+        <Route
+          path="admin"
+          element={
+            <ProtectedRoute requireAdmin>
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
+          {/* job management */}
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="jobs" element={<AdminJobsPage />} />
+          <Route path="jobs/create" element={<AdminJobCreatePage />} />
+          <Route path="jobs/:id/edit" element={<AdminJobEditPage />} />
+
+          {/* user management */}
+          <Route path="users" element={<AdminUsersPage />} />
+          <Route path="users/:id" element={<AdminUserProfilePage />} />
+          <Route path="users/:id/edit" element={<AdminUserProfileEditPage />} />
+          {/* <Route
+            path="jobs"
+            element={<div className="p-8 text-center text-zinc-600">Jobs Management - Coming Soon</div>}
+          />
+          <Route
+            path="users"
+            element={<div className="p-8 text-center text-zinc-600">Users Management - Coming Soon</div>}
+          />
+          <Route
+            path="applications"
+            element={<div className="p-8 text-center text-zinc-600">Applications Management - Coming Soon</div>}
+          />
+          <Route
+            path="applications/:id"
+            element={<div className="p-8 text-center text-zinc-600">Application Details - Coming Soon</div>}
+          /> */}
         </Route>
       </Routes>
     </BrowserRouter>

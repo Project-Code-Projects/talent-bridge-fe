@@ -18,32 +18,40 @@ export const useJobStore = create<JobsState>()(
       selectedJob: null,
       isLoading: false,
       error: null,
+      pagination: { total: 0, totalPages: 0, currentPage: 1, limit: 10 },
 
       // Fetch all jobs
-      fetchJobs: async () => {
+      fetchJobs: async (page = 1, limit = 10) => {
         if (get().isLoading) return;
-
-        set({ isLoading: true, error: null }, false, "jobs/fetchJobs/start");
-
+        set({ isLoading: true, error: null }, false, "jobs/fetch/start");
         try {
-          const jobs = await JobService.getAllJobs();
+          const res = await JobService.getAllJobs(page, limit);
           set(
-            { jobs, isLoading: false, error: null },
+            {
+              jobs: res.jobs,
+              pagination: {
+                total: res.total,
+                totalPages: res.totalPages,
+                currentPage: res.currentPage,
+                limit,
+              },
+              isLoading: false,
+              error: null,
+            },
             false,
-            "jobs/fetchJobs/success"
+            "jobs/fetch/success"
           );
         } catch (error) {
-          const errorMessage = handleServiceError(error);
           set(
-            { jobs: [], isLoading: false, error: errorMessage },
+            { jobs: [], isLoading: false, error: handleServiceError(error) },
             false,
-            "jobs/fetchJobs/error"
+            "jobs/fetch/error"
           );
         }
       },
 
       // Fetch job by ID
-      fetchJobById: async (id: string) => {
+      fetchJobById: async (id: number) => {
         if (get().isLoading) return;
 
         set({ isLoading: true, error: null }, false, "jobs/fetchJobById/start");
@@ -82,12 +90,13 @@ export const useJobStore = create<JobsState>()(
   )
 );
 
-// Selectors (keep these the same)
+// Selectors
 export const selectJobs = (state: JobsState) => state.jobs;
 export const selectSelectedJob = (state: JobsState) => state.selectedJob;
 export const selectIsLoading = (state: JobsState) => state.isLoading;
 export const selectError = (state: JobsState) => state.error;
+export const selectPagination = (state: JobsState) => state.pagination;
 
 //selectors to get job by ID from cache/searching through the already-loaded jobs array in the Zustand store
-export const selectJobById = (id: string) => (state: JobsState) =>
+export const selectJobById = (id: number) => (state: JobsState) =>
   state.jobs.find((job) => job.id === id);

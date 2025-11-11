@@ -86,13 +86,13 @@ export default function Navbar() {
                   : "text-zinc-600"
               }`}
             >
-              Sign up / Log in
+              Signup/Login
             </Link>
           )}
         </div>
 
         {/* Mobile */}
-        {isAuthenticated ? (
+        {/* {isAuthenticated ? (
           <button
             onClick={handleLogout}
             className="inline-flex items-center rounded-xl border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 shadow-sm hover:shadow md:hidden"
@@ -106,7 +106,7 @@ export default function Navbar() {
           >
             Get started!
           </Link>
-        )}
+        )} */}
       </nav>
     </header>
   );

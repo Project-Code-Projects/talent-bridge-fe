@@ -1,4 +1,3 @@
-import React from "react";
 import type { TExperience } from "../../types/profile.types";
 
 type Props = {
