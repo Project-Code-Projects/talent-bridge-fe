@@ -29,8 +29,17 @@ export default function Auth() {
     clearError();
 
     try {
-      await signup(signupForm.name, signupForm.email, signupForm.password);
-      navigate("/profile");
+      const user = await signup(
+        signupForm.name,
+        signupForm.email,
+        signupForm.password
+      );
+      // Role-based redirect
+      if (user && user.roleId === 1) {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/profile");
+      }
     } catch {
       // Error is handled by store
     }
@@ -42,8 +51,13 @@ export default function Auth() {
     clearError();
 
     try {
-      await login(loginForm.email, loginForm.password);
-      navigate("/profile");
+      const user = await login(loginForm.email, loginForm.password);
+      // Role-based redirect
+      if (user && user.roleId === 1) {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/jobs");
+      }
     } catch {
       // Error is handled by store
     }

@@ -1,13 +1,13 @@
-// types/auth.types.ts
+// export interface User {
+//   id: number;
+//   name: string;
+//   email: string;
+//   roleId: number;
+//   createdAt?: string;
+//   updatedAt?: string;
+// }
 
-export interface User {
-  id: number;
-  name: string;
-  email: string;
-  roleId: number;
-  createdAt?: string;
-  updatedAt?: string;
-}
+import type { User } from "./user.types";
 
 export interface SignupRequest {
   name: string;
@@ -52,8 +52,8 @@ export interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-  signup: (name: string, email: string, password: string) => Promise<void>;
-  login: (email: string, password: string) => Promise<void>;
+  signup: (name: string, email: string, password: string) => Promise<User>;
+  login: (email: string, password: string) => Promise<User>;
   logout: () => void;
   clearError: () => void;
   checkAuth: () => void;

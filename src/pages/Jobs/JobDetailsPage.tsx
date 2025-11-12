@@ -1,4 +1,3 @@
-// src/pages/Jobs/JobDetailsPage.tsx
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import {
@@ -21,6 +20,7 @@ import CoverLetterModal from "../../components/application/CoverLetterModal";
 
 export default function JobDetailsPage() {
   const { id } = useParams<{ id: string }>();
+  const idNum = id ? Number(id) : undefined;
   const navigate = useNavigate();
 
   const selectedJob = useJobStore(selectSelectedJob);
@@ -35,7 +35,7 @@ export default function JobDetailsPage() {
   const applyingJobs = useApplicationStore((state) => state.applyingJobs);
   const user = useAuthStore((state) => state.user);
 
-  const cachedJob = useJobStore(selectJobById(id || ""));
+  const cachedJob = idNum ? useJobStore(selectJobById(idNum)) : undefined;
 
   const [openModal, setOpenModal] = useState(false);
 
@@ -49,8 +49,8 @@ export default function JobDetailsPage() {
       return;
     }
 
-    if (!selectedJob || selectedJob.id !== id) {
-      fetchJobById(id);
+    if (!selectedJob || selectedJob.id !== Number(id)) {
+      fetchJobById(Number(id));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
@@ -120,7 +120,7 @@ export default function JobDetailsPage() {
             </button>
             {id && (
               <button
-                onClick={() => fetchJobById(id)}
+                onClick={() => fetchJobById(Number(id))}
                 className="inline-flex items-center rounded-xl border border-zinc-300 bg-white px-6 py-3 text-sm font-semibold text-zinc-900 hover:bg-zinc-50 transition-colors"
               >
                 Try Again
