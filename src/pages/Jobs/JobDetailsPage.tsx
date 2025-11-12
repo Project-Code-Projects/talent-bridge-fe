@@ -75,12 +75,9 @@ export default function JobDetailsPage() {
         jobId: jobIdNum,
         userId: user.id,
         coverLetter,
-        // note: resumeUrl can be omitted; backend will use profile resume if missing
       });
-      // show a small success (you can replace with toast)
       navigate("/dashboard");
     } catch (err: any) {
-      // keep simple: show alert (or use your toast)
       alert(err?.response?.data?.message || err?.message || "Failed to apply");
     } finally {
       setApplyingJob(jobIdNum, false);
@@ -241,14 +238,24 @@ export default function JobDetailsPage() {
                     <p className="text-lg font-semibold text-zinc-900">
                       {new Date(selectedJob.deadline).toLocaleDateString(
                         "en-US",
-                        { year: "numeric", month: "long", day: "numeric" }
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        }
                       )}
                     </p>
                   </div>
 
                   <div className="flex gap-3 w-full sm:w-auto">
                     <button
-                      onClick={() => setOpenModal(true)}
+                      onClick={() => {
+                        if (!user) {
+                          navigate("/auth");
+                          return;
+                        }
+                        setOpenModal(true);
+                      }}
                       disabled={applying}
                       className={`w-full sm:w-auto inline-flex items-center justify-center rounded-xl px-8 py-3 text-sm font-semibold text-white shadow transition-colors ${
                         applying
