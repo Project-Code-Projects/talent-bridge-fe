@@ -35,7 +35,8 @@ export default function JobDetailsPage() {
   const applyingJobs = useApplicationStore((state) => state.applyingJobs);
   const user = useAuthStore((state) => state.user);
 
-  const cachedJob = idNum ? useJobStore(selectJobById(idNum)) : undefined;
+  const jobState = useJobStore();
+  const cachedJob = idNum ? selectJobById(idNum)(jobState) : undefined;
 
   const [openModal, setOpenModal] = useState(false);
 
@@ -77,8 +78,13 @@ export default function JobDetailsPage() {
         coverLetter,
       });
       navigate("/dashboard");
-    } catch (err: any) {
-      alert(err?.response?.data?.message || err?.message || "Failed to apply");
+    } catch (err: unknown) {
+      alert(
+        (err as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message ||
+          (err as Error)?.message ||
+          "Failed to apply"
+      );
     } finally {
       setApplyingJob(jobIdNum, false);
       setOpenModal(false);
