@@ -26,6 +26,7 @@ export const useJobStore = create<JobsState>()(
         set({ isLoading: true, error: null }, false, "jobs/fetch/start");
         try {
           const res = await JobService.getAllJobs(page, limit);
+          console.log("JobsService response:", res);
           set(
             {
               jobs: res.jobs,
