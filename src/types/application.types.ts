@@ -1,4 +1,17 @@
 // src/types/application.types.ts
+
+export type TApplicationStatus =
+  | "pending"
+  | "revewing"
+  | "accepted"
+  | "rejected";
+
+export interface TApplicationUser {
+  id: number;
+  name: string;
+  email: string;
+}
+
 export interface TJobBrief {
   id: string | number;
   title: string;
@@ -11,11 +24,12 @@ export interface TApplication {
   id: number;
   jobId: number;
   userId: number;
-  status: string;
+  status: TApplicationStatus;
   appliedAt: string;
   resumeUrl?: string;
   coverLetter?: string;
   metadata?: string;
+  user?: TApplicationUser;
   job?: TJobBrief;
 }
 
@@ -30,3 +44,12 @@ export interface TApplicationCreateInput {
 export interface TApplicationStatusUpdateInput {
   status: string;
 }
+
+export interface TAdminApplicationResponse {
+  applications: TApplication[];
+  total: number;
+  totalPages: number;
+  currentPage: number;
+}
+
+export type TApplicationFilterBy = "users" | "company" | "job";
