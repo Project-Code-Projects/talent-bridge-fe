@@ -30,7 +30,7 @@ export default function ProfileFormPage() {
 
   useEffect(() => {
     fetchMyProfile();
-  }, []);
+  }, [fetchMyProfile]);
 
   useEffect(() => {
     if (!profile) return;
@@ -55,7 +55,11 @@ export default function ProfileFormPage() {
       resumeUrl,
     };
     try {
-      profile ? await updateProfile(payload) : await createProfile(payload);
+      if (profile) {
+        await updateProfile(payload);
+      } else {
+        await createProfile(payload);
+      }
       navigate("/dashboard");
     } catch {
       alert("Failed to save profile");

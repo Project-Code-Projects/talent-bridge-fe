@@ -51,6 +51,5 @@ export const adminJobService = {
     return response;
   },
 
-  // Export error handler for use in store
   handleAxiosError,
 };

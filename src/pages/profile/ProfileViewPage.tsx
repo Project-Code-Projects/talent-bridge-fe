@@ -11,7 +11,7 @@ export default function ProfileViewPage() {
 
   useEffect(() => {
     fetchMyProfile();
-  }, []);
+  }, [fetchMyProfile]);
 
   if (loading) {
     return (
