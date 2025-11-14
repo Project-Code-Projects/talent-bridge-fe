@@ -198,7 +198,6 @@ export const useAdminUserStore = create<AdminUserState>()(
     }),
     {
       name: "AdminUserStore",
-      enabled: import.meta.env.DEV,
     }
   )
 );

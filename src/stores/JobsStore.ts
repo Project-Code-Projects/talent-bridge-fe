@@ -86,7 +86,6 @@ export const useJobStore = create<JobsState>()(
     }),
     {
       name: "JobStore",
-      enabled: import.meta.env.DEV,
     }
   )
 );

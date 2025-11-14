@@ -195,7 +195,6 @@ export const useAdminJobStore = create<AdminJobState>()(
     }),
     {
       name: "AdminJobStore",
-      enabled: import.meta.env.DEV,
     }
   )
 );

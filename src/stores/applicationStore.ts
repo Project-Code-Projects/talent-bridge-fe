@@ -181,7 +181,6 @@ export const useApplicationStore = create<ApplicationState>()(
     }),
     {
       name: "ApplicationStore",
-      enabled: import.meta.env.DEV,
     }
   )
 );
