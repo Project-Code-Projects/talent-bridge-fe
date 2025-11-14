@@ -14,16 +14,16 @@ export interface Application {
     name: string;
     email: string;
     roleId: number;
+    Profile?: {
+      fullName?: string;
+      resumeUrl?: string;
+    };
   };
   Job?: {
     id: number;
     title: string;
     company: string;
     location?: string;
-  };
-  Profile?: {
-    fullName?: string;
-    resumeUrl?: string;
   };
 }
 

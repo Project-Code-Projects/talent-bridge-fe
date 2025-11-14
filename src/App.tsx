@@ -19,6 +19,7 @@ import AdminJobCreatePage from "./pages/Admin/AdminJobCreatePage";
 import AdminUsersPage from "./pages/Admin/AdminUsersPage";
 import AdminUserProfilePage from "./pages/Admin/AdminUsersProfilePage";
 import AdminUserProfileEditPage from "./pages/Admin/AdminUserProfileEditPage";
+import AdminApplicationsPage from "./pages/Admin/AdminApplicationsPage";
 
 function App() {
   const checkAuth = useAuthStore((state) => state.checkAuth);
@@ -55,6 +56,7 @@ function App() {
           <Route path="jobs" element={<AdminJobsPage />} />
           <Route path="jobs/create" element={<AdminJobCreatePage />} />
           <Route path="jobs/:id/edit" element={<AdminJobEditPage />} />
+          <Route path="applications" element={<AdminApplicationsPage />} />
 
           {/* user management */}
           <Route path="users" element={<AdminUsersPage />} />
