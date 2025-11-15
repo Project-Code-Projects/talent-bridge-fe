@@ -23,6 +23,10 @@ export default function AdminApplicationsPage() {
     newStatus: string;
   } | null>(null);
 
+  const [coverLetterModal, setCoverLetterModal] = useState<{
+    application: Application;
+  } | null>(null);
+
   useEffect(() => {
     clearError();
     fetchAllApplications(1, 10);
@@ -66,6 +70,15 @@ export default function AdminApplicationsPage() {
       hour: "2-digit",
       minute: "2-digit",
     });
+  };
+
+  const truncateCoverLetter = (
+    text: string | null | undefined,
+    maxLength: number = 80
+  ) => {
+    if (!text) return "No cover letter";
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + "...";
   };
 
   if (isLoading && applications.length === 0) {
@@ -140,6 +153,9 @@ export default function AdminApplicationsPage() {
                         Applicant
                       </th>
                       <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-600 uppercase tracking-wider">
+                        Email
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-600 uppercase tracking-wider">
                         Job Title
                       </th>
                       <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-600 uppercase tracking-wider">
@@ -154,6 +170,9 @@ export default function AdminApplicationsPage() {
                       <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-600 uppercase tracking-wider">
                         Resume
                       </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-600 uppercase tracking-wider">
+                        Cover Letter
+                      </th>
                       <th className="px-6 py-4 text-right text-xs font-semibold text-zinc-600 uppercase tracking-wider">
                         Actions
                       </th>
@@ -166,16 +185,21 @@ export default function AdminApplicationsPage() {
                         className="hover:bg-zinc-50 transition-colors"
                       >
                         <td className="px-6 py-4">
-                          <div>
+                          <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                              <span className="text-sm font-semibold text-indigo-700">
+                                {app.User?.name.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
                             <p className="font-medium text-zinc-900">
                               {app.User?.Profile?.fullName ||
                                 app.User?.name ||
                                 "N/A"}
                             </p>
-                            <p className="text-sm text-zinc-500">
-                              {app.User?.email || "N/A"}
-                            </p>
                           </div>
+                        </td>
+                        <td className="text-sm text-zinc-500">
+                          {app.User?.email || "N/A"}
                         </td>
                         <td className="px-6 py-4 text-sm text-zinc-700">
                           {app.Job?.title || "N/A"}
@@ -215,18 +239,31 @@ export default function AdminApplicationsPage() {
                             </span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-right">
+                        <td className="px-6 py-4">
                           <button
                             onClick={() =>
-                              setStatusModal({
-                                application: app,
-                                newStatus: app.status,
-                              })
+                              setCoverLetterModal({ application: app })
                             }
-                            className="inline-flex items-center gap-1 rounded-lg bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-700 hover:bg-indigo-100 transition-colors"
+                            className="text-sm text-zinc-600 hover:text-zinc-800 text-left"
+                            title={app.coverLetter || "No cover letter"}
                           >
-                            Update Status
+                            {truncateCoverLetter(app.coverLetter)}
                           </button>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex justify-end gap-2">
+                            <button
+                              onClick={() =>
+                                setStatusModal({
+                                  application: app,
+                                  newStatus: app.status,
+                                })
+                              }
+                              className="inline-flex items-center gap-1 rounded-lg bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-700 hover:bg-indigo-100 transition-colors"
+                            >
+                              Update Status
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -334,6 +371,96 @@ export default function AdminApplicationsPage() {
                 className="px-4 py-2 rounded-lg bg-indigo-600 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isLoading ? "Updating..." : "Update Status"}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Cover Letter Modal */}
+      {coverLetterModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-2xl p-6 w-full max-w-4xl max-h-[80vh] flex flex-col"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-zinc-900">
+                Cover Letter
+              </h3>
+              <button
+                onClick={() => setCoverLetterModal(null)}
+                className="text-zinc-400 hover:text-zinc-600 transition-colors"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <div className="mb-4">
+              <p className="text-sm text-zinc-600">
+                From{" "}
+                <span className="font-medium">
+                  {coverLetterModal.application.User?.Profile?.fullName ||
+                    coverLetterModal.application.User?.name ||
+                    "Applicant"}
+                </span>{" "}
+                for{" "}
+                <span className="font-medium">
+                  {coverLetterModal.application.Job?.title || "the job"}
+                </span>{" "}
+                at{" "}
+                <span className="font-medium">
+                  {coverLetterModal.application.Job?.company || "the company"}
+                </span>
+              </p>
+            </div>
+
+            <div className="flex-1 overflow-y-auto">
+              {coverLetterModal.application.coverLetter ? (
+                <div className="bg-zinc-50 rounded-lg p-4 border border-zinc-200">
+                  <pre className="whitespace-pre-wrap font-sans text-sm text-zinc-700 leading-relaxed">
+                    {coverLetterModal.application.coverLetter}
+                  </pre>
+                </div>
+              ) : (
+                <div className="text-center py-8 text-zinc-500">
+                  <svg
+                    className="w-12 h-12 mx-auto mb-3 text-zinc-300"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1}
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  <p>No cover letter provided</p>
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end mt-4 pt-4 border-t border-zinc-200">
+              <button
+                onClick={() => setCoverLetterModal(null)}
+                className="px-4 py-2 rounded-lg bg-zinc-600 text-sm font-medium text-white hover:bg-zinc-700 transition-colors"
+              >
+                Close
               </button>
             </div>
           </motion.div>

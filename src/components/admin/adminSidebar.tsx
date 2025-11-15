@@ -1,8 +1,10 @@
-// components/admin/AdminSidebar.tsx
-
 import { Link, useLocation } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import JobsIcon from "../../assets/JobsIcon.png";
+import UsersIcon from "../../assets/UsersIcon.png";
+import ApplicationIcon from "../../assets/ApplicationIcon.png";
+import DashboardIcon from "../../assets/DashboardIcon.png";
 
 interface SidebarLink {
   name: string;
@@ -11,10 +13,10 @@ interface SidebarLink {
 }
 
 const links: SidebarLink[] = [
-  { name: "Dashboard", path: "/admin/dashboard", icon: "📊" },
-  { name: "Jobs", path: "/admin/jobs", icon: "💼" },
-  { name: "Users", path: "/admin/users", icon: "👥" },
-  { name: "Applications", path: "/admin/applications", icon: "📝" },
+  { name: "Dashboard", path: "/admin/dashboard", icon: DashboardIcon },
+  { name: "Jobs", path: "/admin/jobs", icon: JobsIcon },
+  { name: "Users", path: "/admin/users", icon: UsersIcon },
+  { name: "Applications", path: "/admin/applications", icon: ApplicationIcon },
 ];
 
 export default function AdminSidebar() {
@@ -51,7 +53,9 @@ export default function AdminSidebar() {
                   : "text-zinc-700 hover:bg-zinc-100"
               }`}
             >
-              <span className="text-lg">{link.icon}</span>
+              <span className="text-lg">
+                <img src={link.icon} alt="icon.png" className="w-6 h-6" />
+              </span>
               <AnimatePresence>
                 {!isCollapsed && (
                   <motion.span
