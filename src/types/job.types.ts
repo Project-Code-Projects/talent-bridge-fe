@@ -34,7 +34,12 @@ export interface JobsState {
   pagination: PaginationMeta;
 
   // Actions
-  fetchJobs: (page?: number, limit?: number) => Promise<void>;
+  fetchJobs: (
+    page?: number,
+    limit?: number,
+    search?: string,
+    filterBy?: string
+  ) => Promise<void>;
   fetchJobById: (id: number) => Promise<void>;
   clearError: () => void;
   clearSelectedJob: () => void;

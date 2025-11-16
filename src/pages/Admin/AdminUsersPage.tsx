@@ -3,6 +3,7 @@ import { useAdminUserStore } from "../../stores/adminUserStore";
 import { motion } from "framer-motion";
 import { fadeUp, stagger } from "../../utils/animation";
 import { Link } from "react-router-dom";
+import SearchBar from "../../components/layout/SearchBar";
 
 export default function AdminUsersPage() {
   const {
@@ -27,8 +28,8 @@ export default function AdminUsersPage() {
 
   useEffect(() => {
     clearError();
-    fetchAllUsers(1, 20);
-  }, [fetchAllUsers, clearError]);
+    fetchAllUsers(1, 20, searchParams.search, searchParams.sort);
+  }, [fetchAllUsers, clearError, searchParams.search, searchParams.sort]);
 
   const handleDelete = async (id: number) => {
     try {
@@ -48,6 +49,13 @@ export default function AdminUsersPage() {
       searchParams.sort
     );
   };
+
+  const userSortOptions = [
+    { value: "name_asc", label: "Name A-Z" },
+    { value: "name_desc", label: "Name Z-A" },
+    { value: "newest", label: "Newest First" },
+    { value: "oldest", label: "Oldest First" },
+  ];
 
   if (isLoading && users.length === 0) {
     return (
@@ -79,6 +87,16 @@ export default function AdminUsersPage() {
               Showing {users.length} of {pagination.total} users
             </p>
           </div>
+        </motion.div>
+
+        <motion.div variants={fadeUp}>
+          <SearchBar
+            onSearch={handleSearch}
+            placeholder="Search users by name..."
+            filterOptions={userSortOptions}
+            initialSearch={searchParams.search}
+            initialFilter={searchParams.sort}
+          />
         </motion.div>
 
         {/* Error Alert */}

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { fadeUp, stagger } from "../../utils/animation";
 import Footer from "../../components/landing-page/Footer";
@@ -11,6 +11,7 @@ import {
   useJobStore,
 } from "../../stores/JobsStore";
 import LocationIcon from "../../assets/LocationIcon.png";
+import SearchBar from "../../components/layout/SearchBar";
 
 export default function JobsPage() {
   const [params, setParams] = useSearchParams();
@@ -23,11 +24,34 @@ export default function JobsPage() {
   const { total, totalPages, currentPage } = useJobStore(selectPagination);
   const fetchJobs = useJobStore((s) => s.fetchJobs);
   const clearError = useJobStore((s) => s.clearError);
+  const [searchParams, setSearchParams] = useState({
+    search: "",
+    filterBy: "",
+  });
 
   useEffect(() => {
     clearError();
-    fetchJobs(pageParam, limit);
-  }, [pageParam, limit, fetchJobs, clearError]);
+    fetchJobs(pageParam, limit, searchParams.search, searchParams.filterBy);
+  }, [
+    pageParam,
+    limit,
+    clearError,
+    searchParams.search,
+    searchParams.filterBy,
+    fetchJobs,
+  ]);
+
+  const handleSearch = (search: string, filterBy?: string) => {
+    setSearchParams({ search, filterBy: filterBy || "" });
+    setParams({ page: "1" }); // Reset to first page when searching
+    fetchJobs(1, limit, search, filterBy);
+  };
+
+  const jobFilterOptions = [
+    { value: "title", label: "By Title" },
+    { value: "company", label: "By Company" },
+    { value: "location", label: "By Location" },
+  ];
 
   const goTo = (p: number) => setParams({ page: String(p) });
 
@@ -84,9 +108,18 @@ export default function JobsPage() {
             <h1 className="text-4xl font-bold tracking-tight mb-2">
               Available Positions
             </h1>
-            <p className="text-lg text-zinc-600">
+            <p className="text-lg text-zinc-600 mb-6">
               Showing page {currentPage} of {totalPages} • {total} total jobs
             </p>
+
+            <SearchBar
+              onSearch={handleSearch}
+              placeholder="Search jobs by title, company, or location..."
+              filterOptions={jobFilterOptions}
+              initialSearch={searchParams.search}
+              initialFilter={searchParams.filterBy}
+              className="mb-8"
+            />
           </motion.div>
 
           {jobs.length === 0 ? (
