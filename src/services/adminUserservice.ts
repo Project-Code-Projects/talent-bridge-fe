@@ -24,14 +24,14 @@ export const adminUserService = {
     page?: number,
     limit?: number,
     search?: string,
-    filterBy?: string
+    sort?: string
   ) =>
     axiosInstance.get<{
       users: User[];
       total: number;
       totalPages: number;
       currentPage: number;
-    }>("/users", { params: { page, limit, search, filterBy } }),
+    }>("/users", { params: { page, limit, search, sort } }),
 
   fetchUserById: (id: number) => axiosInstance.get<User>(`/users/${id}`),
 

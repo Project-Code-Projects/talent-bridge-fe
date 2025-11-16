@@ -37,7 +37,12 @@ export const useAdminUserStore = create<AdminUserState>()(
         limit: 20,
       },
 
-      fetchAllUsers: async (page = 1, limit = 20) => {
+      fetchAllUsers: async (
+        page = 1,
+        limit = 20,
+        search?: string,
+        sort?: string
+      ) => {
         if (get().isLoading) return;
 
         set(
@@ -47,7 +52,12 @@ export const useAdminUserStore = create<AdminUserState>()(
         );
 
         try {
-          const response = await adminUserService.fetchAllUsers(page, limit);
+          const response = await adminUserService.fetchAllUsers(
+            page,
+            limit,
+            search,
+            sort as "name_asc" | "name_desc" | "newest" | "oldest" | undefined
+          );
 
           set(
             {

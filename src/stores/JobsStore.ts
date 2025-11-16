@@ -21,11 +21,21 @@ export const useJobStore = create<JobsState>()(
       pagination: { total: 0, totalPages: 0, currentPage: 1, limit: 10 },
 
       // Fetch all jobs
-      fetchJobs: async (page = 1, limit = 10) => {
+      fetchJobs: async (
+        page = 1,
+        limit = 10,
+        search?: string,
+        filterBy?: string
+      ) => {
         if (get().isLoading) return;
         set({ isLoading: true, error: null }, false, "jobs/fetch/start");
         try {
-          const res = await JobService.getAllJobs(page, limit);
+          const res = await JobService.getAllJobs(
+            page,
+            limit,
+            search,
+            filterBy as "all" | "title" | "company" | "location" | undefined
+          );
           console.log("JobsService response:", res);
           set(
             {
