@@ -17,7 +17,12 @@ export const useAdminApplicationStore = create<AdminApplicationState>()(
         limit: 10,
       },
 
-      fetchAllApplications: async (page = 1, limit = 10, search?: string, filterBy?: string) => {
+      fetchAllApplications: async (
+        page = 1,
+        limit = 10,
+        search?: string,
+        filterBy?: string
+      ) => {
         if (get().isLoading) return;
 
         set(

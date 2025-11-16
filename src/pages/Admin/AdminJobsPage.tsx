@@ -5,6 +5,7 @@ import { fadeUp, stagger } from "../../utils/animation";
 import { Link } from "react-router-dom";
 import EditIcon from "../../assets/EditIcon.png";
 import DeleteIcon from "../../assets/DeleteIcon.png";
+import SearchBar from "../../components/layout/SearchBar";
 
 export default function AdminJobsPage() {
   const {
@@ -17,11 +18,29 @@ export default function AdminJobsPage() {
     clearError,
   } = useAdminJobStore();
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
+  const [searchParams, setSearchParams] = useState({
+    search: "",
+    filterBy: "",
+  });
 
   useEffect(() => {
     clearError();
-    fetchAllJobs(1, 10); // Load first page with 10 items
-  }, [fetchAllJobs, clearError]);
+    fetchAllJobs(1, 10, searchParams.search, searchParams.filterBy);
+  }, [fetchAllJobs, clearError, searchParams.search, searchParams.filterBy]);
+
+  const handleSearch = (search: string, filterBy?: string) => {
+    setSearchParams({ search, filterBy: filterBy || "" });
+    fetchAllJobs(1, pagination.limit, search, filterBy);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    fetchAllJobs(
+      newPage,
+      pagination.limit,
+      searchParams.search,
+      searchParams.filterBy
+    );
+  };
 
   const handleDelete = async (id: number) => {
     try {
@@ -34,10 +53,6 @@ export default function AdminJobsPage() {
     }
   };
 
-  const handlePageChange = (newPage: number) => {
-    fetchAllJobs(newPage, pagination.limit);
-  };
-
   if (isLoading && jobs.length === 0) {
     return (
       <div className="min-h-screen pt-10 flex items-center justify-center">
@@ -48,6 +63,12 @@ export default function AdminJobsPage() {
       </div>
     );
   }
+
+  const jobFilterOptions = [
+    { value: "title", label: "By Title" },
+    { value: "company", label: "By Company" },
+    { value: "location", label: "By Location" },
+  ];
 
   return (
     <section className="pt-10 pb-16">
@@ -74,6 +95,16 @@ export default function AdminJobsPage() {
           >
             <span>+</span> Create New Job
           </Link>
+        </motion.div>
+
+        <motion.div variants={fadeUp}>
+          <SearchBar
+            onSearch={handleSearch}
+            placeholder="Search jobs by title, company, or location..."
+            filterOptions={jobFilterOptions}
+            initialSearch={searchParams.search}
+            initialFilter={searchParams.filterBy}
+          />
         </motion.div>
 
         {/* Error Alert */}

@@ -9,7 +9,12 @@ export interface AdminJobState {
   pagination: PaginationMeta;
 
   // Actions
-  fetchAllJobs: (page?: number, limit?: number) => Promise<void>;
+  fetchAllJobs: (
+    page?: number,
+    limit?: number,
+    search?: string,
+    filterBy?: string
+  ) => Promise<void>;
   fetchJobById: (id: number) => Promise<void>;
   updateJob: (id: number, data: Partial<Job>) => Promise<void>;
   deleteJob: (id: number) => Promise<void>;

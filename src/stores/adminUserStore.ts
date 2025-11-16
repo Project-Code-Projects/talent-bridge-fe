@@ -1,27 +1,10 @@
 import { create } from "zustand";
-import type { PaginationMeta } from "../types/paginationMeta.types";
-import type { User } from "../types/user.types";
+import type { AdminUserState, User } from "../types/user.types";
 import { devtools } from "zustand/middleware";
 import {
   adminUserService,
   handleAxiosError,
 } from "../services/adminUserservice";
-
-interface AdminUserState {
-  users: User[];
-  selectedUser: User | null;
-  isLoading: boolean;
-  error: string | null;
-  pagination: PaginationMeta;
-
-  // Actions
-  fetchAllUsers: (page?: number, limit?: number) => Promise<void>;
-  fetchUserById: (id: number) => Promise<void>;
-  updateUser: (id: number, data: Partial<User>) => Promise<void>;
-  deleteUser: (id: number) => Promise<void>;
-  clearError: () => void;
-  clearSelectedUser: () => void;
-}
 
 export const useAdminUserStore = create<AdminUserState>()(
   devtools(

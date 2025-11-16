@@ -1,3 +1,5 @@
+import type { PaginationMeta } from "./paginationMeta.types";
+
 export interface Experience {
   company: string;
   role: string;
@@ -27,4 +29,25 @@ export interface User {
   createdAt: string;
   updatedAt?: string;
   Profile?: Profile;
+}
+
+export interface AdminUserState {
+  users: User[];
+  selectedUser: User | null;
+  isLoading: boolean;
+  error: string | null;
+  pagination: PaginationMeta;
+
+  // Actions
+  fetchAllUsers: (
+    page?: number,
+    limit?: number,
+    search?: string,
+    sort?: string
+  ) => Promise<void>;
+  fetchUserById: (id: number) => Promise<void>;
+  updateUser: (id: number, data: Partial<User>) => Promise<void>;
+  deleteUser: (id: number) => Promise<void>;
+  clearError: () => void;
+  clearSelectedUser: () => void;
 }

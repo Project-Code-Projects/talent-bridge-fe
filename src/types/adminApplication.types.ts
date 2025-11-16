@@ -49,7 +49,12 @@ export interface AdminApplicationState {
     currentPage: number;
     limit: number;
   };
-  fetchAllApplications: (page?: number, limit?: number) => Promise<void>;
+  fetchAllApplications: (
+    page?: number,
+    limit?: number,
+    search?: string,
+    filterBy?: string
+  ) => Promise<void>;
   updateApplicationStatus: (id: number, status: string) => Promise<void>;
   clearError: () => void;
   clearSelectedApplication: () => void;

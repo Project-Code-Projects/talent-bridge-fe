@@ -6,6 +6,7 @@ import {
 } from "../../types/adminApplication.types";
 import { motion } from "framer-motion";
 import { fadeUp, stagger } from "../../utils/animation";
+import SearchBar from "../../components/layout/SearchBar";
 
 export default function AdminApplicationsPage() {
   const {
@@ -27,13 +28,33 @@ export default function AdminApplicationsPage() {
     application: Application;
   } | null>(null);
 
+  const [searchParams, setSearchParams] = useState({
+    search: "",
+    filterBy: "",
+  });
+
   useEffect(() => {
     clearError();
-    fetchAllApplications(1, 10);
-  }, [fetchAllApplications, clearError]);
+    fetchAllApplications(1, 10, searchParams.search, searchParams.filterBy);
+  }, [
+    fetchAllApplications,
+    clearError,
+    searchParams.search,
+    searchParams.filterBy,
+  ]);
+
+  const handleSearch = (search: string, filterBy?: string) => {
+    setSearchParams({ search, filterBy: filterBy || "" });
+    fetchAllApplications(1, pagination.limit, search, filterBy);
+  };
 
   const handlePageChange = (newPage: number) => {
-    fetchAllApplications(newPage, pagination.limit);
+    fetchAllApplications(
+      newPage,
+      pagination.limit,
+      searchParams.search,
+      searchParams.filterBy
+    );
   };
 
   const handleStatusUpdate = async () => {
@@ -51,6 +72,12 @@ export default function AdminApplicationsPage() {
       console.error("Status update failed:", error);
     }
   };
+
+  const applicationFilterOptions = [
+    { value: "users", label: "By User" },
+    { value: "company", label: "By Company" },
+    { value: "job", label: "By Job" },
+  ];
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -103,11 +130,24 @@ export default function AdminApplicationsPage() {
         className="space-y-6"
       >
         {/* Header */}
-        <motion.div variants={fadeUp}>
+        <motion.div
+          variants={fadeUp}
+          className="flex items-center justify-between"
+        >
           <h1 className="text-3xl font-bold text-zinc-900">Job Applications</h1>
           <p className="mt-2 text-zinc-600">
             Showing {applications.length} of {pagination.total} applications
           </p>
+        </motion.div>
+
+        <motion.div variants={fadeUp}>
+          <SearchBar
+            onSearch={handleSearch}
+            placeholder="Search applications by user, company, or job..."
+            filterOptions={applicationFilterOptions}
+            initialSearch={searchParams.search}
+            initialFilter={searchParams.filterBy}
+          />
         </motion.div>
 
         {/* Error Alert */}

@@ -15,6 +15,15 @@ export default function AdminUsersPage() {
     clearError,
   } = useAdminUserStore();
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
+  const [searchParams, setSearchParams] = useState({
+    search: "",
+    sort: "",
+  });
+
+  const handleSearch = (search: string, sort?: string) => {
+    setSearchParams({ search, sort: sort || "" });
+    fetchAllUsers(1, pagination.limit, search, sort);
+  };
 
   useEffect(() => {
     clearError();
@@ -32,7 +41,12 @@ export default function AdminUsersPage() {
   };
 
   const handlePageChange = (newPage: number) => {
-    fetchAllUsers(newPage, pagination.limit);
+    fetchAllUsers(
+      newPage,
+      pagination.limit,
+      searchParams.search,
+      searchParams.sort
+    );
   };
 
   if (isLoading && users.length === 0) {
