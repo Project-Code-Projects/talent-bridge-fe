@@ -3,9 +3,14 @@ import axiosInstance from "./api";
 
 export const JobService = {
   // Fetch all jobs
-  getAllJobs: async (page = 1, limit = 10): Promise<JobsResponse> => {
+  getAllJobs: async (
+    page = 1,
+    limit = 10,
+    search?: string,
+    filterBy?: string
+  ): Promise<JobsResponse> => {
     const { data } = await axiosInstance.get<JobsResponse>("/jobs", {
-      params: { page, limit },
+      params: { page, limit, search, filterBy },
     });
     return data;
   },

@@ -21,14 +21,19 @@ const handleAxiosError = (error: unknown): string => {
 
 export const adminJobService = {
   // Fetch all jobs with pagination
-  fetchAllJobs: async (page?: number, limit?: number) => {
+  fetchAllJobs: async (
+    page?: number,
+    limit?: number,
+    search?: string,
+    filterBy?: string
+  ) => {
     const response = await axiosInstance.get<{
       jobs: Job[];
       total: number;
       totalPages: number;
       currentPage: number;
     }>("/jobs", {
-      params: { page, limit },
+      params: { page, limit, search, filterBy },
     });
     return response;
   },

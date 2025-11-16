@@ -20,13 +20,18 @@ export const handleAxiosError = (error: unknown): string => {
 };
 
 export const adminUserService = {
-  fetchAllUsers: (page?: number, limit?: number) =>
+  fetchAllUsers: (
+    page?: number,
+    limit?: number,
+    search?: string,
+    filterBy?: string
+  ) =>
     axiosInstance.get<{
       users: User[];
       total: number;
       totalPages: number;
       currentPage: number;
-    }>("/users", { params: { page, limit } }),
+    }>("/users", { params: { page, limit, search, filterBy } }),
 
   fetchUserById: (id: number) => axiosInstance.get<User>(`/users/${id}`),
 

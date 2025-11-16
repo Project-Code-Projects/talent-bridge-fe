@@ -24,11 +24,16 @@ const handleAxiosError = (error: unknown): string => {
 };
 
 export const adminApplicationService = {
-  fetchAllApplications: async (page?: number, limit?: number) => {
+  fetchAllApplications: async (
+    page?: number,
+    limit?: number,
+    search?: string,
+    filterBy?: string
+  ) => {
     const response = await axiosInstance.get<ApplicationsResponse>(
       "/applications",
       {
-        params: { page, limit },
+        params: { page, limit, search, filterBy },
       }
     );
     return response;

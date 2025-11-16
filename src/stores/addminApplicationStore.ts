@@ -17,7 +17,7 @@ export const useAdminApplicationStore = create<AdminApplicationState>()(
         limit: 10,
       },
 
-      fetchAllApplications: async (page = 1, limit = 10) => {
+      fetchAllApplications: async (page = 1, limit = 10, search?: string, filterBy?: string) => {
         if (get().isLoading) return;
 
         set(
@@ -29,7 +29,9 @@ export const useAdminApplicationStore = create<AdminApplicationState>()(
         try {
           const response = await adminApplicationService.fetchAllApplications(
             page,
-            limit
+            limit,
+            search,
+            filterBy as "users" | "company" | "job" | undefined
           );
 
           set(

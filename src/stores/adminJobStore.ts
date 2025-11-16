@@ -18,8 +18,12 @@ export const useAdminJobStore = create<AdminJobState>()(
         limit: 10,
       },
 
-      // fetch jobs with pagination here
-      fetchAllJobs: async (page = 1, limit = 10) => {
+      fetchAllJobs: async (
+        page = 1,
+        limit = 10,
+        search?: string,
+        filterBy?: string
+      ) => {
         if (get().isLoading) return;
 
         set(
@@ -29,7 +33,12 @@ export const useAdminJobStore = create<AdminJobState>()(
         );
 
         try {
-          const response = await adminJobService.fetchAllJobs(page, limit);
+          const response = await adminJobService.fetchAllJobs(
+            page,
+            limit,
+            search,
+            filterBy as "all" | "title" | "company" | "location" | undefined
+          );
 
           set(
             {
