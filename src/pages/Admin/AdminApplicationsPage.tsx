@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAdminApplicationStore } from "../../stores/addminApplicationStore";
 import {
   APPLICATION_STATUSES,
@@ -36,17 +36,16 @@ export default function AdminApplicationsPage() {
   useEffect(() => {
     clearError();
     fetchAllApplications(1, 10, searchParams.search, searchParams.filterBy);
-  }, [
-    fetchAllApplications,
-    clearError,
-    searchParams.search,
-    searchParams.filterBy,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams.search, searchParams.filterBy]);
 
-  const handleSearch = (search: string, filterBy?: string) => {
-    setSearchParams({ search, filterBy: filterBy || "" });
-    fetchAllApplications(1, pagination.limit, search, filterBy);
-  };
+  const handleSearch = useCallback(
+    (search: string, filterBy?: string) => {
+      setSearchParams({ search, filterBy: filterBy || "" });
+      fetchAllApplications(1, pagination.limit, search, filterBy);
+    },
+    [fetchAllApplications, pagination.limit]
+  );
 
   const handlePageChange = (newPage: number) => {
     fetchAllApplications(

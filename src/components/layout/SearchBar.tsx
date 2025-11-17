@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import type { SearchBarProps } from "../../types/searchbar.types";
 import { fadeUp, stagger } from "../../utils/animation";
@@ -6,28 +6,60 @@ import { fadeUp, stagger } from "../../utils/animation";
 export default function SearchBar({
   onSearch,
   placeholder = "Search...",
-  filterOptions,
+  // filterOptions,
   initialSearch = "",
   initialFilter = "",
   className = "",
+  debounceMs = 300,
 }: SearchBarProps) {
   const [search, setSearch] = useState(initialSearch);
   const [filterBy, setFilterBy] = useState(initialFilter);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleSearch = () => {
-    onSearch(search, filterBy);
-  };
+  const debouncedSearch = useCallback(
+    (searchValue: string, filterValue: string) => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
-  };
+      timeoutRef.current = setTimeout(() => {
+        onSearch(searchValue, filterValue);
+      }, debounceMs);
+    },
+    [onSearch, debounceMs]
+  );
+
+  useEffect(() => {
+    debouncedSearch(search, filterBy);
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [search, filterBy, debouncedSearch]);
 
   const handleClear = () => {
     setSearch("");
     setFilterBy("");
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
     onSearch("", "");
+  };
+
+  // const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  //   const newFilter = e.target.value;
+  //   setFilterBy(newFilter);
+  //   if (timeoutRef.current) {
+  //     clearTimeout(timeoutRef.current);
+  //   }
+  //   onSearch(search, newFilter);
+  // };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearch(value);
   };
 
   return (
@@ -42,36 +74,25 @@ export default function SearchBar({
           <input
             type="text"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onChange={handleSearchChange}
             placeholder={placeholder}
-            className="w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+            className="w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 pr-10"
           />
           {search && (
             <button
               onClick={handleClear}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-zinc-400 hover:text-zinc-600"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition-colors"
             >
               ✕
             </button>
           )}
         </motion.div>
-
-        <button
-          onClick={handleSearch}
-          className="px-6 py-3 rounded-xl bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors"
-        >
-          Search
-        </button>
       </motion.div>
 
-      {filterOptions && filterOptions.length > 0 && (
+      {/* {filterOptions && filterOptions.length > 0 && (
         <select
           value={filterBy}
-          onChange={(e) => {
-            setFilterBy(e.target.value);
-            onSearch(search, e.target.value);
-          }}
+          onChange={handleFilterChange}
           className="rounded-xl border border-zinc-300 px-4 py-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 min-w-[140px]"
         >
           <option value="">All</option>
@@ -81,7 +102,7 @@ export default function SearchBar({
             </option>
           ))}
         </select>
-      )}
+      )} */}
     </motion.div>
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAdminUserStore } from "../../stores/adminUserStore";
 import { motion } from "framer-motion";
 import { fadeUp, stagger } from "../../utils/animation";
@@ -21,15 +21,19 @@ export default function AdminUsersPage() {
     sort: "",
   });
 
-  const handleSearch = (search: string, sort?: string) => {
-    setSearchParams({ search, sort: sort || "" });
-    fetchAllUsers(1, pagination.limit, search, sort);
-  };
+  const handleSearch = useCallback(
+    (search: string, sort?: string) => {
+      setSearchParams({ search, sort: sort || "" });
+      fetchAllUsers(1, pagination.limit, search, sort);
+    },
+    [fetchAllUsers, pagination.limit]
+  );
 
   useEffect(() => {
     clearError();
     fetchAllUsers(1, 20, searchParams.search, searchParams.sort);
-  }, [fetchAllUsers, clearError, searchParams.search, searchParams.sort]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams.search, searchParams.sort]);
 
   const handleDelete = async (id: number) => {
     try {

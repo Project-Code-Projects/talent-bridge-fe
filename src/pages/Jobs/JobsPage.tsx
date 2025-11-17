@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { fadeUp, stagger } from "../../utils/animation";
 import Footer from "../../components/landing-page/Footer";
@@ -32,20 +32,17 @@ export default function JobsPage() {
   useEffect(() => {
     clearError();
     fetchJobs(pageParam, limit, searchParams.search, searchParams.filterBy);
-  }, [
-    pageParam,
-    limit,
-    clearError,
-    searchParams.search,
-    searchParams.filterBy,
-    fetchJobs,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageParam, limit, searchParams.search, searchParams.filterBy]);
 
-  const handleSearch = (search: string, filterBy?: string) => {
-    setSearchParams({ search, filterBy: filterBy || "" });
-    setParams({ page: "1" }); // Reset to first page when searching
-    fetchJobs(1, limit, search, filterBy);
-  };
+  const handleSearch = useCallback(
+    (search: string, filterBy?: string) => {
+      setSearchParams({ search, filterBy: filterBy || "" });
+      setParams({ page: "1" }); // Reset to first page when searching
+      fetchJobs(1, limit, search, filterBy);
+    },
+    [fetchJobs, limit, setParams]
+  );
 
   const jobFilterOptions = [
     { value: "title", label: "By Title" },
@@ -179,7 +176,6 @@ export default function JobsPage() {
               ))}
             </motion.div>
           )}
-
           {/* Pagination controls */}
           {totalPages > 1 && (
             <div className="mt-10 flex items-center justify-center gap-3">

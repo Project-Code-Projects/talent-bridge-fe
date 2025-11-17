@@ -5,4 +5,5 @@ export interface SearchBarProps {
   initialSearch?: string;
   initialFilter?: string;
   className?: string;
+  debounceMs?: number;
 }

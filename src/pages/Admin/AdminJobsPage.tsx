@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAdminJobStore } from "../../stores/adminJobStore";
 import { fadeUp, stagger } from "../../utils/animation";
 import { Link } from "react-router-dom";
@@ -26,12 +26,16 @@ export default function AdminJobsPage() {
   useEffect(() => {
     clearError();
     fetchAllJobs(1, 10, searchParams.search, searchParams.filterBy);
-  }, [fetchAllJobs, clearError, searchParams.search, searchParams.filterBy]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams.search, searchParams.filterBy]);
 
-  const handleSearch = (search: string, filterBy?: string) => {
-    setSearchParams({ search, filterBy: filterBy || "" });
-    fetchAllJobs(1, pagination.limit, search, filterBy);
-  };
+  const handleSearch = useCallback(
+    (search: string, filterBy?: string) => {
+      setSearchParams({ search, filterBy: filterBy || "" });
+      fetchAllJobs(1, pagination.limit, search, filterBy);
+    },
+    [fetchAllJobs, pagination.limit]
+  );
 
   const handlePageChange = (newPage: number) => {
     fetchAllJobs(
