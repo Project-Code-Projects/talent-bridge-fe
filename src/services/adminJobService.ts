@@ -25,7 +25,7 @@ export const adminJobService = {
     page?: number,
     limit?: number,
     search?: string,
-    filterBy?: string
+    sort?: "newest" | "oldest"
   ) => {
     const response = await axiosInstance.get<{
       jobs: Job[];
@@ -33,7 +33,7 @@ export const adminJobService = {
       totalPages: number;
       currentPage: number;
     }>("/jobs", {
-      params: { page, limit, search, filterBy },
+      params: { page, limit, search, sort },
     });
     return response;
   },

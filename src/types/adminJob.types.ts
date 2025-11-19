@@ -13,7 +13,7 @@ export interface AdminJobState {
     page?: number,
     limit?: number,
     search?: string,
-    filterBy?: string
+    sort?: "newest" | "oldest"
   ) => Promise<void>;
   fetchJobById: (id: number) => Promise<void>;
   updateJob: (id: number, data: Partial<Job>) => Promise<void>;

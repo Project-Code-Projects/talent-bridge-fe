@@ -44,7 +44,6 @@ export default function SearchBar({
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-    // let the effect trigger a debounced call with empty search + current filter
     debouncedSearch("", filterBy);
   };
 
