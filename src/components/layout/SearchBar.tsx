@@ -6,7 +6,7 @@ import { fadeUp, stagger } from "../../utils/animation";
 export default function SearchBar({
   onSearch,
   placeholder = "Search...",
-  // filterOptions,
+  filterOptions,
   initialSearch = "",
   initialFilter = "",
   className = "",
@@ -41,21 +41,17 @@ export default function SearchBar({
 
   const handleClear = () => {
     setSearch("");
-    setFilterBy("");
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-    onSearch("", "");
+    // let the effect trigger a debounced call with empty search + current filter
+    debouncedSearch("", filterBy);
   };
 
-  // const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-  //   const newFilter = e.target.value;
-  //   setFilterBy(newFilter);
-  //   if (timeoutRef.current) {
-  //     clearTimeout(timeoutRef.current);
-  //   }
-  //   onSearch(search, newFilter);
-  // };
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newFilter = e.target.value;
+    setFilterBy(newFilter);
+  };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -89,20 +85,21 @@ export default function SearchBar({
         </motion.div>
       </motion.div>
 
-      {/* {filterOptions && filterOptions.length > 0 && (
+      {filterOptions && filterOptions.length > 0 && (
         <select
           value={filterBy}
           onChange={handleFilterChange}
-          className="rounded-xl border border-zinc-300 px-4 py-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 min-w-[140px]"
+          className="rounded-xl border border-zinc-300 px-4 py-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 min-w-[160px]"
         >
-          <option value="">All</option>
+          {/* for sort we probably always want an explicit value */}
+          {filterBy === "" && <option value="">Sort by...</option>}
           {filterOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>
           ))}
         </select>
-      )} */}
+      )}
     </motion.div>
   );
 }
