@@ -38,7 +38,7 @@ export interface JobsState {
     page?: number,
     limit?: number,
     search?: string,
-    filterBy?: string
+    sort?: "newest" | "oldest"
   ) => Promise<void>;
   fetchJobById: (id: number) => Promise<void>;
   clearError: () => void;

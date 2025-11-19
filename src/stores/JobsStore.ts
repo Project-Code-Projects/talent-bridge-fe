@@ -25,17 +25,12 @@ export const useJobStore = create<JobsState>()(
         page = 1,
         limit = 10,
         search?: string,
-        filterBy?: string
+        sort: "newest" | "oldest" = "newest"
       ) => {
         if (get().isLoading) return;
         set({ isLoading: true, error: null }, false, "jobs/fetch/start");
         try {
-          const res = await JobService.getAllJobs(
-            page,
-            limit,
-            search,
-            filterBy as "all" | "title" | "company" | "location" | undefined
-          );
+          const res = await JobService.getAllJobs(page, limit, search, sort);
           console.log("JobsService response:", res);
           set(
             {

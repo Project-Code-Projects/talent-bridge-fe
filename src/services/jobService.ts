@@ -7,10 +7,10 @@ export const JobService = {
     page = 1,
     limit = 10,
     search?: string,
-    filterBy?: string
+    sort: "newest" | "oldest" = "newest"
   ): Promise<JobsResponse> => {
     const { data } = await axiosInstance.get<JobsResponse>("/jobs", {
-      params: { page, limit, search, filterBy },
+      params: { page, limit, search, sort },
     });
     return data;
   },

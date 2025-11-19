@@ -50,6 +50,7 @@ export default function SearchBar({
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newFilter = e.target.value;
     setFilterBy(newFilter);
+    debouncedSearch(search, newFilter); //remove if 300ms is required
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
