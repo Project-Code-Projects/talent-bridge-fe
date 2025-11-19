@@ -18,31 +18,34 @@ export default function AdminJobsPage() {
     clearError,
   } = useAdminJobStore();
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
-  const [searchParams, setSearchParams] = useState({
+
+  const [searchParams, setSearchParams] = useState<{
+    search: string;
+    sort: "newest" | "oldest";
+  }>({
     search: "",
-    filterBy: "",
+    sort: "newest",
   });
 
   useEffect(() => {
     clearError();
-    fetchAllJobs(1, 10, searchParams.search, searchParams.filterBy);
+    fetchAllJobs(1, pagination.limit, searchParams.search, searchParams.sort);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams.search, searchParams.filterBy]);
+  }, [searchParams.search, searchParams.sort]);
 
-  const handleSearch = useCallback(
-    (search: string, filterBy?: string) => {
-      setSearchParams({ search, filterBy: filterBy || "" });
-      fetchAllJobs(1, pagination.limit, search, filterBy);
-    },
-    [fetchAllJobs, pagination.limit]
-  );
+  const handleSearch = useCallback((search: string, sortValue?: string) => {
+    setSearchParams((prev) => ({
+      search,
+      sort: (sortValue as "newest" | "oldest") || prev.sort,
+    }));
+  }, []);
 
   const handlePageChange = (newPage: number) => {
     fetchAllJobs(
       newPage,
       pagination.limit,
       searchParams.search,
-      searchParams.filterBy
+      searchParams.sort
     );
   };
 
@@ -50,8 +53,13 @@ export default function AdminJobsPage() {
     try {
       await deleteJob(id);
       setDeleteConfirm(null);
-      // Reload current page after deletion
-      fetchAllJobs(pagination.currentPage, pagination.limit);
+      // Reload current page after deletion with same filters
+      fetchAllJobs(
+        pagination.currentPage,
+        pagination.limit,
+        searchParams.search,
+        searchParams.sort
+      );
     } catch (error) {
       console.error("Delete failed:", error);
     }
@@ -68,10 +76,9 @@ export default function AdminJobsPage() {
     );
   }
 
-  const jobFilterOptions = [
-    { value: "title", label: "By Title" },
-    { value: "company", label: "By Company" },
-    { value: "location", label: "By Location" },
+  const jobSortOptions = [
+    { value: "newest", label: "Newest" },
+    { value: "oldest", label: "Oldest" },
   ];
 
   return (
@@ -105,9 +112,9 @@ export default function AdminJobsPage() {
           <SearchBar
             onSearch={handleSearch}
             placeholder="Search jobs by title, company, or location..."
-            filterOptions={jobFilterOptions}
+            filterOptions={jobSortOptions}
             initialSearch={searchParams.search}
-            initialFilter={searchParams.filterBy}
+            initialFilter={searchParams.sort}
           />
         </motion.div>
 

@@ -22,7 +22,7 @@ export const useAdminJobStore = create<AdminJobState>()(
         page = 1,
         limit = 10,
         search?: string,
-        filterBy?: string
+        sort: "newest" | "oldest" = "newest"
       ) => {
         if (get().isLoading) return;
 
@@ -37,7 +37,7 @@ export const useAdminJobStore = create<AdminJobState>()(
             page,
             limit,
             search,
-            filterBy as "all" | "title" | "company" | "location" | undefined
+            sort
           );
 
           set(
@@ -60,7 +60,6 @@ export const useAdminJobStore = create<AdminJobState>()(
 
           set(
             {
-              jobs: [],
               isLoading: false,
               error: errorMessage,
             },
@@ -69,6 +68,7 @@ export const useAdminJobStore = create<AdminJobState>()(
           );
 
           console.error("Failed to fetch jobs:", error);
+          throw error;
         }
       },
 
