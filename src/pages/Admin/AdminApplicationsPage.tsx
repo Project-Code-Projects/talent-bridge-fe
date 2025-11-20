@@ -7,6 +7,7 @@ import {
 import { motion } from "framer-motion";
 import { fadeUp, stagger } from "../../utils/animation";
 import SearchBar from "../../components/layout/SearchBar";
+import { adminJobService } from "../../services/adminJobService";
 
 export default function AdminApplicationsPage() {
   const {
@@ -32,6 +33,14 @@ export default function AdminApplicationsPage() {
     search: "",
     filterBy: "",
   });
+
+  // jobId -> statusOptions[] (from backend)
+  const [statusOptionsByJob, setStatusOptionsByJob] = useState<
+    Record<number, string[]>
+  >({});
+
+  const [newStatusInput, setNewStatusInput] = useState("");
+  const [isSavingStatusOptions, setIsSavingStatusOptions] = useState(false);
 
   useEffect(() => {
     clearError();
@@ -107,6 +116,78 @@ export default function AdminApplicationsPage() {
     return text.substring(0, maxLength) + "...";
   };
 
+  //load job.statusOptions from backend for a jobId
+  const loadJobStatusOptions = useCallback(
+    async (jobId?: number) => {
+      if (!jobId) return;
+      if (statusOptionsByJob[jobId]) return; // already loaded
+
+      try {
+        const res = await adminJobService.fetchJobById(jobId);
+        const job = res.data;
+        const options = Array.isArray(job.statusOptions)
+          ? job.statusOptions
+          : [];
+
+        setStatusOptionsByJob((prev) => ({
+          ...prev,
+          [jobId]: options,
+        }));
+      } catch (err) {
+        console.error("Failed to load job status options", err);
+      }
+    },
+    [statusOptionsByJob]
+  );
+
+  // Helper: add a new custom status for the job and persist via backend
+  const handleAddCustomStatus = async () => {
+    if (!statusModal) return;
+    const jobId = statusModal.application.Job?.id;
+    if (!jobId) return;
+
+    const raw = newStatusInput.trim();
+    if (!raw) return;
+
+    // Normalize a bit (you can tweak this if you want case-sensitive / spaces)
+    const normalized = raw.toLowerCase().replace(/\s+/g, "_");
+
+    const existingBackendOptions = statusOptionsByJob[jobId] ?? [];
+    if (existingBackendOptions.includes(normalized)) {
+      setNewStatusInput("");
+      setStatusModal({
+        ...statusModal,
+        newStatus: normalized,
+      });
+      return;
+    }
+
+    const updatedOptions = [...existingBackendOptions, normalized];
+
+    setIsSavingStatusOptions(true);
+    try {
+      await adminJobService.updateJob(jobId, {
+        statusOptions: updatedOptions,
+      });
+
+      setStatusOptionsByJob((prev) => ({
+        ...prev,
+        [jobId]: updatedOptions,
+      }));
+
+      // Select the newly added status in the dropdown
+      setStatusModal({
+        ...statusModal,
+        newStatus: normalized,
+      });
+      setNewStatusInput("");
+    } catch (err) {
+      console.error("Failed to save custom status to backend", err);
+    } finally {
+      setIsSavingStatusOptions(false);
+    }
+  };
+
   if (isLoading && applications.length === 0) {
     return (
       <div className="min-h-screen pt-10 flex items-center justify-center">
@@ -133,10 +214,14 @@ export default function AdminApplicationsPage() {
           variants={fadeUp}
           className="flex items-center justify-between"
         >
-          <h1 className="text-3xl font-bold text-zinc-900">Job Applications</h1>
-          <p className="mt-2 text-zinc-600">
-            Showing {applications.length} of {pagination.total} applications
-          </p>
+          <div>
+            <h1 className="text-3xl font-bold text-zinc-900">
+              Job Applications
+            </h1>
+            <p className="mt-2 text-zinc-600">
+              Showing {applications.length} of {pagination.total} applications
+            </p>
+          </div>
         </motion.div>
 
         <motion.div variants={fadeUp}>
@@ -292,12 +377,15 @@ export default function AdminApplicationsPage() {
                         <td className="px-6 py-4 text-right">
                           <div className="flex justify-end gap-2">
                             <button
-                              onClick={() =>
+                              onClick={() => {
+                                if (app.Job?.id) {
+                                  loadJobStatusOptions(app.Job.id);
+                                }
                                 setStatusModal({
                                   application: app,
                                   newStatus: app.status,
-                                })
-                              }
+                                });
+                              }}
                               className="inline-flex items-center gap-1 rounded-lg bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-700 hover:bg-indigo-100 transition-colors"
                             >
                               Update Status
@@ -375,22 +463,72 @@ export default function AdminApplicationsPage() {
               <label className="block text-sm font-medium text-zinc-700 mb-2">
                 Status
               </label>
-              <select
-                value={statusModal.newStatus}
-                onChange={(e) =>
-                  setStatusModal({
-                    ...statusModal,
-                    newStatus: e.target.value,
-                  })
-                }
-                className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
-              >
-                {APPLICATION_STATUSES.map((status) => (
-                  <option key={status} value={status}>
-                    {status.charAt(0).toUpperCase() + status.slice(1)}
-                  </option>
-                ))}
-              </select>
+
+              {(() => {
+                const jobId = statusModal.application.Job?.id;
+                const jobOptions = jobId ? statusOptionsByJob[jobId] || [] : [];
+                // Merge default, backend options and current status
+                const mergedOptions = Array.from(
+                  new Set<string>([
+                    ...APPLICATION_STATUSES,
+                    ...jobOptions,
+                    statusModal.application.status,
+                  ])
+                );
+
+                return (
+                  <>
+                    <select
+                      value={statusModal.newStatus}
+                      onChange={(e) =>
+                        setStatusModal({
+                          ...statusModal,
+                          newStatus: e.target.value,
+                        })
+                      }
+                      className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                    >
+                      {mergedOptions.map((status) => (
+                        <option key={status} value={status}>
+                          {status.replace(/_/g, " ")}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* Add custom status */}
+                    <div className="mt-4">
+                      <label className="block text-sm font-medium text-zinc-700 mb-1">
+                        Add custom status
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={newStatusInput}
+                          onChange={(e) => setNewStatusInput(e.target.value)}
+                          placeholder="e.g. shortlisted, phone_screen..."
+                          className="flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleAddCustomStatus}
+                          disabled={
+                            isSavingStatusOptions ||
+                            !newStatusInput.trim() ||
+                            !statusModal.application.Job?.id
+                          }
+                          className="px-3 py-2 rounded-lg bg-zinc-900 text-xs font-medium text-white hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
+                        >
+                          {isSavingStatusOptions ? "Saving..." : "Add"}
+                        </button>
+                      </div>
+                      <p className="mt-1 text-xs text-zinc-500">
+                        Custom statuses are saved to this job and will be
+                        available next time.
+                      </p>
+                    </div>
+                  </>
+                );
+              })()}
             </div>
 
             <div className="flex gap-3 justify-end">

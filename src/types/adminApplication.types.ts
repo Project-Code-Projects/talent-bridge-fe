@@ -67,4 +67,4 @@ export const APPLICATION_STATUSES = [
   "rejected",
 ] as const;
 
-export type ApplicationStatus = (typeof APPLICATION_STATUSES)[number];
+export type ApplicationStatus = string;

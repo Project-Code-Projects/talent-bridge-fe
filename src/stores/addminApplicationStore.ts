@@ -21,7 +21,7 @@ export const useAdminApplicationStore = create<AdminApplicationState>()(
         page = 1,
         limit = 10,
         search?: string,
-        filterBy?: string
+        sort?: string
       ) => {
         if (get().isLoading) return;
 
@@ -36,7 +36,7 @@ export const useAdminApplicationStore = create<AdminApplicationState>()(
             page,
             limit,
             search,
-            filterBy as "users" | "company" | "job" | undefined
+            sort
           );
 
           set(
@@ -83,19 +83,16 @@ export const useAdminApplicationStore = create<AdminApplicationState>()(
         try {
           const response =
             await adminApplicationService.updateApplicationStatus(id, status);
-
-          // Update the application in the list
-          const updatedApplications = get().applications.map((app) =>
-            app.id === id ? { ...app, status } : app
-          );
+          const updated = response.data.updated;
 
           set(
-            {
-              applications: updatedApplications,
-              selectedApplication: response.data.updated || null,
+            (state) => ({
+              applications: state.applications.map((a) =>
+                a.id === id ? updated : a
+              ),
               isLoading: false,
               error: null,
-            },
+            }),
             false,
             "adminApplications/updateStatus/success"
           );

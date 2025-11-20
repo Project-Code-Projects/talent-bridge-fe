@@ -2,7 +2,6 @@ import { AxiosError } from "axios";
 import axiosInstance from "./api";
 import type {
   Application,
-  ApplicationsResponse,
   UpdateApplicationStatusRequest,
 } from "../types/adminApplication.types";
 
@@ -24,20 +23,20 @@ const handleAxiosError = (error: unknown): string => {
 };
 
 export const adminApplicationService = {
-  fetchAllApplications: async (
+  fetchAllApplications: (
     page?: number,
     limit?: number,
     search?: string,
-    filterBy?: string
-  ) => {
-    const response = await axiosInstance.get<ApplicationsResponse>(
-      "/applications",
-      {
-        params: { page, limit, search, filterBy },
-      }
-    );
-    return response;
-  },
+    sort?: string
+  ) =>
+    axiosInstance.get<{
+      applications: Application[];
+      total: number;
+      totalPages: number;
+      currentPage: number;
+    }>("/applications", {
+      params: { page, limit, search, sort },
+    }),
 
   //update application
   updateApplicationStatus: async (id: number, status: string) => {

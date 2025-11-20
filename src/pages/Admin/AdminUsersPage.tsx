@@ -18,28 +18,32 @@ export default function AdminUsersPage() {
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
   const [searchParams, setSearchParams] = useState({
     search: "",
-    sort: "",
+    sort: "newest",
   });
-
-  const handleSearch = useCallback(
-    (search: string, sort?: string) => {
-      setSearchParams({ search, sort: sort || "" });
-      fetchAllUsers(1, pagination.limit, search, sort);
-    },
-    [fetchAllUsers, pagination.limit]
-  );
 
   useEffect(() => {
     clearError();
-    fetchAllUsers(1, 20, searchParams.search, searchParams.sort);
+    fetchAllUsers(1, pagination.limit, searchParams.search, searchParams.sort);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams.search, searchParams.sort]);
+
+  const handleSearch = useCallback((search: string, sort?: string) => {
+    setSearchParams((prev) => ({
+      search,
+      sort: sort || prev.sort,
+    }));
+  }, []);
 
   const handleDelete = async (id: number) => {
     try {
       await deleteUser(id);
       setDeleteConfirm(null);
-      fetchAllUsers(pagination.currentPage, pagination.limit);
+      fetchAllUsers(
+        pagination.currentPage,
+        pagination.limit,
+        searchParams.search,
+        searchParams.sort
+      );
     } catch (error) {
       console.error("Delete failed:", error);
     }

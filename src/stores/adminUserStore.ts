@@ -39,7 +39,7 @@ export const useAdminUserStore = create<AdminUserState>()(
             page,
             limit,
             search,
-            sort as "name_asc" | "name_desc" | "newest" | "oldest" | undefined
+            sort
           );
 
           set(
@@ -68,6 +68,7 @@ export const useAdminUserStore = create<AdminUserState>()(
             false,
             "adminUsers/fetchAll/error"
           );
+          console.error("Failed to fetch users:", error);
         }
       },
 
@@ -103,6 +104,7 @@ export const useAdminUserStore = create<AdminUserState>()(
             false,
             "adminUsers/fetchById/error"
           );
+          console.error("Failed to fetch user:", error);
         }
       },
 
