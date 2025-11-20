@@ -5,7 +5,7 @@ export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { isAuthenticated, logout } = useAuthStore();
+  const { isAuthenticated, logout, user } = useAuthStore();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -13,6 +13,8 @@ export default function Navbar() {
     logout();
     navigate("/");
   };
+
+  const isAdmin = user?.roleId === 1;
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 bg-white/70 backdrop-blur border-b border-zinc-200">
@@ -48,16 +50,31 @@ export default function Navbar() {
           {/* Authenticated Links */}
           {isAuthenticated ? (
             <div className="flex items-center gap-4">
-              <Link
-                to="/dashboard"
-                className={`text-sm hover:text-zinc-900 ${
-                  isActive("/dashboard")
-                    ? "text-zinc-900 font-medium"
-                    : "text-zinc-600"
-                }`}
-              >
-                Dashboard
-              </Link>
+              {isAdmin && (
+                <Link
+                  to="/admin/dashboard"
+                  className={`text-sm hover:text-zinc-900 ${
+                    isActive("/admin/dashboard")
+                      ? "text-zinc-900 font-medium"
+                      : "text-zinc-600"
+                  }`}
+                >
+                  Dashboard
+                </Link>
+              )}
+
+              {!isAdmin && (
+                <Link
+                  to="/dashboard"
+                  className={`text-sm hover:text-zinc-900 ${
+                    isActive("/dashboard")
+                      ? "text-zinc-900 font-medium"
+                      : "text-zinc-600"
+                  }`}
+                >
+                  Dashboard
+                </Link>
+              )}
 
               <Link
                 to="/profile"
