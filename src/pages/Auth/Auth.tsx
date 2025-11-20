@@ -8,7 +8,7 @@ export default function Auth() {
   const navigate = useNavigate();
   const { signup, login, isLoading, error, clearError } = useAuthStore();
 
-  const [activeTab, setActiveTab] = useState<"signup" | "login">("signup");
+  const [activeTab, setActiveTab] = useState<"signup" | "login">("login");
 
   // Signup form state
   const [signupForm, setSignupForm] = useState({
