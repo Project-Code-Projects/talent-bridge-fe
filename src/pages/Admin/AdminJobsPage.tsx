@@ -5,6 +5,7 @@ import { fadeUp, stagger } from "../../utils/animation";
 import { Link } from "react-router-dom";
 import EditIcon from "../../assets/EditIcon.png";
 import DeleteIcon from "../../assets/DeleteIcon.png";
+import JobsIcon from "../../assets/JobsIcon.png";
 import SearchBar from "../../components/layout/SearchBar";
 
 export default function AdminJobsPage() {
@@ -65,16 +66,18 @@ export default function AdminJobsPage() {
     }
   };
 
-  if (isLoading && jobs.length === 0) {
-    return (
-      <div className="min-h-screen pt-10 flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
-          <p className="mt-4 text-zinc-600 font-medium">Loading jobs...</p>
-        </div>
-      </div>
-    );
-  }
+  const hasSearch = searchParams.search.trim().length > 0;
+
+  // if (isLoading && jobs.length === 0) {
+  //   return (
+  //     <div className="min-h-screen pt-10 flex items-center justify-center">
+  //       <div className="text-center">
+  //         <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
+  //         <p className="mt-4 text-zinc-600 font-medium">Loading jobs...</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   const jobSortOptions = [
     { value: "newest", label: "Newest" },
@@ -141,19 +144,37 @@ export default function AdminJobsPage() {
           variants={fadeUp}
           className="rounded-2xl border border-zinc-200 bg-white shadow-sm overflow-hidden"
         >
-          {jobs.length === 0 ? (
+          {isLoading && jobs.length === 0 ? (
+            // Initial load (no jobs loaded yet)
+            <div className="py-16 flex items-center justify-center">
+              <div className="text-center">
+                <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent" />
+                <p className="mt-4 text-zinc-600 font-medium">
+                  Loading jobs...
+                </p>
+              </div>
+            </div>
+          ) : jobs.length === 0 ? (
+            // No jobs / no search results
             <div className="text-center py-16">
-              <div className="text-6xl mb-4">💼</div>
-              <h3 className="text-xl font-semibold mb-2">No jobs posted yet</h3>
+              {/* <div className="text-6xl mb-4">💼</div> */}
+              <img src={JobsIcon} alt="job" className="w-5 h-5" />
+              <h3 className="text-xl font-semibold mb-2">
+                {hasSearch ? "No jobs found" : "No jobs posted yet"}
+              </h3>
               <p className="text-zinc-600 mb-6">
-                Get started by creating your first job posting
+                {hasSearch
+                  ? `No jobs matched "${searchParams.search}". Try changing your search or sort options.`
+                  : "Get started by creating your first job posting."}
               </p>
-              <Link
-                to="/admin/jobs/create"
-                className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow hover:bg-indigo-700"
-              >
-                <span>+</span> Create Job
-              </Link>
+              {!hasSearch && (
+                <Link
+                  to="/admin/jobs/create"
+                  className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow hover:bg-indigo-700"
+                >
+                  <span>+</span> Create Job
+                </Link>
+              )}
             </div>
           ) : (
             <>

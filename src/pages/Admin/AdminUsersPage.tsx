@@ -65,16 +65,16 @@ export default function AdminUsersPage() {
     { value: "oldest", label: "Oldest First" },
   ];
 
-  if (isLoading && users.length === 0) {
-    return (
-      <div className="min-h-screen pt-10 flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
-          <p className="mt-4 text-zinc-600 font-medium">Loading users...</p>
-        </div>
-      </div>
-    );
-  }
+  // if (isLoading && users.length === 0) {
+  //   return (
+  //     <div className="min-h-screen pt-10 flex items-center justify-center">
+  //       <div className="text-center">
+  //         <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
+  //         <p className="mt-4 text-zinc-600 font-medium">Loading users...</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <section className="pt-10 pb-16">
@@ -134,7 +134,6 @@ export default function AdminUsersPage() {
             <div className="text-center py-16">
               <div className="text-6xl mb-4">👥</div>
               <h3 className="text-xl font-semibold mb-2">No users found</h3>
-              <p className="text-zinc-600">No registered users in the system</p>
             </div>
           ) : (
             <>

@@ -77,10 +77,12 @@ export default function JobsPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const hasSearch = searchParamsState.search.trim().length > 0;
+
   if (isLoading && jobs.length === 0) {
     return (
       <>
-        <section className="pt-28 pb-16 px-4">
+        <section className="pt-28 pb-16 px-4 min-h-[70vh]">
           <div className="mx-auto max-w-7xl flex items-center justify-center min-h-[50vh]">
             <div className="text-center">
               <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent" />
@@ -97,8 +99,8 @@ export default function JobsPage() {
 
   if (error) {
     return (
-      <>
-        <section className="pt-28 pb-16 px-4">
+      <div className="min-h-screen flex flex-col">
+        <section className="flex-1 pt-28 pb-16 px-4">
           <div className="mx-auto max-w-3xl">
             <div className="rounded-2xl border border-red-200 bg-red-50 px-6 py-4">
               <h2 className="text-lg font-semibold text-red-800">
@@ -123,13 +125,13 @@ export default function JobsPage() {
           </div>
         </section>
         <Footer />
-      </>
+      </div>
     );
   }
 
   return (
-    <>
-      <section className="pt-28 pb-16 px-4">
+    <div className="min-h-screen flex flex-col">
+      <section className="flex-1 pt-28 pb-16 px-4">
         <div className="mx-auto max-w-7xl">
           {/* Header + search */}
           <motion.div
@@ -162,11 +164,23 @@ export default function JobsPage() {
           </motion.div>
 
           {/* Jobs list */}
-          {jobs.length === 0 ? (
+          {isLoading && jobs.length === 0 ? (
+            // Initial load with no data yet
+            <div className="mx-auto max-w-7xl flex items-center justify-center min-h-[30vh]">
+              <div className="text-center">
+                <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent" />
+                <p className="mt-4 text-zinc-600 font-medium">
+                  Loading amazing opportunities...
+                </p>
+              </div>
+            </div>
+          ) : jobs.length === 0 ? (
+            // No results (after search / filters)
             <div className="rounded-2xl border border-dashed border-zinc-300 bg-white px-6 py-12 text-center">
               <p className="text-zinc-600">
-                No jobs found matching your criteria. Try a different search or
-                sort.
+                {hasSearch
+                  ? `No jobs found matching "${searchParamsState.search}". Try a different search or sort.`
+                  : "No jobs found at the moment. Please check back later."}
               </p>
             </div>
           ) : (
@@ -287,6 +301,6 @@ export default function JobsPage() {
         </div>
       </section>
       <Footer />
-    </>
+    </div>
   );
 }

@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import type { SearchBarProps } from "../../types/searchbar.types";
 import { fadeUp, stagger } from "../../utils/animation";
 
-export default function SearchBar({
+const SearchBar: React.FC<SearchBarProps> = ({
   onSearch,
   placeholder = "Search...",
   filterOptions,
@@ -11,10 +11,28 @@ export default function SearchBar({
   initialFilter = "",
   className = "",
   debounceMs = 300,
-}: SearchBarProps) {
+}) => {
   const [search, setSearch] = useState(initialSearch);
   const [filterBy, setFilterBy] = useState(initialFilter);
+
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isInitial = useRef(true);
+
+  // Keep local state in sync if parent changes initialSearch / initialFilter
+  useEffect(() => {
+    setSearch(initialSearch);
+  }, [initialSearch]);
+
+  useEffect(() => {
+    setFilterBy(initialFilter);
+  }, [initialFilter]);
+
+  const runSearch = useCallback(
+    (searchValue: string, filterValue: string) => {
+      onSearch(searchValue, filterValue);
+    },
+    [onSearch]
+  );
 
   const debouncedSearch = useCallback(
     (searchValue: string, filterValue: string) => {
@@ -23,13 +41,20 @@ export default function SearchBar({
       }
 
       timeoutRef.current = setTimeout(() => {
-        onSearch(searchValue, filterValue);
+        runSearch(searchValue, filterValue);
       }, debounceMs);
     },
-    [onSearch, debounceMs]
+    [runSearch, debounceMs]
   );
 
+  // Trigger live search when search text or filter changes
   useEffect(() => {
+    // Skip very first render so the admin pages can do their own initial fetch
+    if (isInitial.current) {
+      isInitial.current = false;
+      return;
+    }
+
     debouncedSearch(search, filterBy);
 
     return () => {
@@ -39,24 +64,35 @@ export default function SearchBar({
     };
   }, [search, filterBy, debouncedSearch]);
 
+  // Input change handler – just updates local state
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+  };
+
+  // Filter change handler – updates local state and triggers search
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setFilterBy(value);
+
+    // If you want filter changes also debounced, leave this.
+    // If you want them instant, you can swap to runSearch(search, value).
+    debouncedSearch(search, value);
+  };
+
+  // Clear button – clears only via the same debounced pipeline
   const handleClear = () => {
     setSearch("");
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
     debouncedSearch("", filterBy);
   };
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newFilter = e.target.value;
-    setFilterBy(newFilter);
-    debouncedSearch(search, newFilter); //remove if 300ms is required
-  };
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearch(value);
-  };
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <motion.div
@@ -76,6 +112,7 @@ export default function SearchBar({
           />
           {search && (
             <button
+              type="button"
               onClick={handleClear}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition-colors"
             >
@@ -89,9 +126,8 @@ export default function SearchBar({
         <select
           value={filterBy}
           onChange={handleFilterChange}
-          className="rounded-xl border border-zinc-300 px-4 py-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 min-w-[160px]"
+          className="rounded-xl border border-zinc-300 px-4 py-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 min-w-40"
         >
-          {/* for sort we probably always want an explicit value */}
           {filterBy === "" && <option value="">Sort by...</option>}
           {filterOptions.map((option) => (
             <option key={option.value} value={option.value}>
@@ -102,4 +138,6 @@ export default function SearchBar({
       )}
     </motion.div>
   );
-}
+};
+
+export default SearchBar;

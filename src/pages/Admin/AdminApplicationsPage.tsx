@@ -44,17 +44,20 @@ export default function AdminApplicationsPage() {
 
   useEffect(() => {
     clearError();
-    fetchAllApplications(1, 10, searchParams.search, searchParams.filterBy);
+    fetchAllApplications(
+      1,
+      pagination.limit,
+      searchParams.search,
+      searchParams.filterBy
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams.search, searchParams.filterBy]);
+  }, [searchParams.search, searchParams.filterBy, pagination.limit]);
 
-  const handleSearch = useCallback(
-    (search: string, filterBy?: string) => {
-      setSearchParams({ search, filterBy: filterBy || "" });
-      fetchAllApplications(1, pagination.limit, search, filterBy);
-    },
-    [fetchAllApplications, pagination.limit]
-  );
+  const handleSearch = useCallback((search: string, filterBy?: string) => {
+    setSearchParams({ search, filterBy: filterBy || "" });
+
+    // fetchAllApplications(1, pagination.limit, search, filterBy);
+  }, []);
 
   const handlePageChange = (newPage: number) => {
     fetchAllApplications(
@@ -188,18 +191,18 @@ export default function AdminApplicationsPage() {
     }
   };
 
-  if (isLoading && applications.length === 0) {
-    return (
-      <div className="min-h-screen pt-10 flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
-          <p className="mt-4 text-zinc-600 font-medium">
-            Loading applications...
-          </p>
-        </div>
-      </div>
-    );
-  }
+  // if (isLoading && applications.length === 0) {
+  //   return (
+  //     <div className="min-h-screen pt-10 flex items-center justify-center">
+  //       <div className="text-center">
+  //         <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
+  //         <p className="mt-4 text-zinc-600 font-medium">
+  //           Loading applications...
+  //         </p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <section className="pt-10 pb-16">
@@ -229,8 +232,8 @@ export default function AdminApplicationsPage() {
             onSearch={handleSearch}
             placeholder="Search applications by user, company, or job..."
             filterOptions={applicationFilterOptions}
-            initialSearch={searchParams.search}
-            initialFilter={searchParams.filterBy}
+            // initialSearch={searchParams.search}
+            // initialFilter={searchParams.filterBy}
           />
         </motion.div>
 
@@ -263,9 +266,6 @@ export default function AdminApplicationsPage() {
               <h3 className="text-xl font-semibold mb-2">
                 No applications found
               </h3>
-              <p className="text-zinc-600">
-                Applications will appear here once users start applying
-              </p>
             </div>
           ) : (
             <>
@@ -359,7 +359,7 @@ export default function AdminApplicationsPage() {
                             </a>
                           ) : (
                             <span className="text-sm text-zinc-400">
-                              No resume
+                              No resumec
                             </span>
                           )}
                         </td>
