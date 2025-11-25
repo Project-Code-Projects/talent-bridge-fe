@@ -1,46 +1,29 @@
+// src/components/admin/AdminDashboard.tsx
 import { motion } from "framer-motion";
+import { fadeUp, stagger } from "../../utils/animation";
 import DashboardStatsComponent from "./dashboardStats";
 import RecentApplicants from "./recentApplicants";
+import { useQuery } from "@tanstack/react-query";
+import { fetchDashboardData } from "../../services/adminDashboardService";
 import type { DashboardStats, RecentApplicant } from "../../types/admin.types";
-import { fadeUp, stagger } from "../../utils/animation";
-import { useState } from "react";
+
+type DashboardData = {
+  stats: DashboardStats;
+  recentApplicants: RecentApplicant[];
+};
 
 export default function AdminDashboard() {
-  const [stats] = useState<DashboardStats>({
-    totalJobs: 12,
-    totalUsers: 247,
-    totalApplications: 89,
-    applicationsByStatus: {
-      received: 35,
-      shortlisted: 28,
-      rejected: 18,
-      hired: 8,
-    },
+  const { data, isLoading, error, refetch } = useQuery<DashboardData>({
+    queryKey: ["adminDashboardData"],
+    queryFn: fetchDashboardData,
+    staleTime: 1000 * 60 * 5, // 5 min cache
   });
 
-  const [recentApplicants] = useState<RecentApplicant[]>([
-    {
-      id: 1,
-      applicantName: "John Doe",
-      jobTitle: "Senior Frontend Developer",
-      currentStage: "Shortlisted",
-      appliedDate: new Date().toISOString(),
-    },
-    {
-      id: 2,
-      applicantName: "Jane Smith",
-      jobTitle: "Product Designer",
-      currentStage: "Received",
-      appliedDate: new Date(Date.now() - 86400000).toISOString(),
-    },
-    {
-      id: 3,
-      applicantName: "Mike Johnson",
-      jobTitle: "Backend Engineer",
-      currentStage: "Hired",
-      appliedDate: new Date(Date.now() - 172800000).toISOString(),
-    },
-  ]);
+  // Early returns to safely handle loading/error/undefined data
+  if (isLoading) return <p className="p-6">Loading dashboard...</p>;
+  if (error)
+    return <p className="p-6 text-red-600">Failed to load dashboard.</p>;
+  if (!data) return <p className="p-6">No data available</p>;
 
   return (
     <section className="pt-10 pb-16">
@@ -51,11 +34,26 @@ export default function AdminDashboard() {
         className="space-y-6"
       >
         {/* Header */}
-        <motion.div variants={fadeUp}>
-          <h1 className="text-3xl font-bold text-zinc-900">Admin Dashboard</h1>
-          <p className="mt-2 text-zinc-600">
-            Quick overview of active jobs, applicants, and hiring progress
-          </p>
+        <motion.div
+          variants={fadeUp}
+          className="flex justify-between items-center"
+        >
+          <div>
+            <h1 className="text-3xl font-bold text-zinc-900">
+              Admin Dashboard
+            </h1>
+            <p className="mt-2 text-zinc-600">
+              Quick overview of active jobs, applicants, and hiring progress
+            </p>
+          </div>
+
+          {/* Refresh button */}
+          <button
+            onClick={() => refetch()}
+            className="rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium shadow-sm hover:bg-zinc-50"
+          >
+            Refresh
+          </button>
         </motion.div>
 
         {/* Info Alert */}
@@ -63,20 +61,24 @@ export default function AdminDashboard() {
           variants={fadeUp}
           className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800 shadow-sm"
         >
-          ℹ️ Currently showing placeholder data. Connect backend for live stats.
+          ℹ️ Dashboard data is cached. Refresh will fetch fresh data from
+          backend.
         </motion.div>
 
         {/* Stats Card */}
         <motion.div variants={fadeUp}>
           <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
-            <DashboardStatsComponent stats={stats} />
+            <DashboardStatsComponent stats={data.stats} isLoading={isLoading} />
           </div>
         </motion.div>
 
         {/* Recent Applicants */}
         <motion.div variants={fadeUp}>
           <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
-            <RecentApplicants applicants={recentApplicants} />
+            <RecentApplicants
+              applicants={data.recentApplicants}
+              isLoading={isLoading}
+            />
           </div>
         </motion.div>
       </motion.div>

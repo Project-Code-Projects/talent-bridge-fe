@@ -1,3 +1,4 @@
+// src/services/adminService.ts
 import axiosInstance from "./api";
 
 import type {
@@ -16,15 +17,20 @@ export const adminService = {
     return response.data;
   },
 
-  // Recent Applicants
+  // Recent Applicants (mapped to frontend type)
   getRecentApplicants: async (limit = 10): Promise<RecentApplicant[]> => {
-    const response = await axiosInstance.get<RecentApplicant[]>(
-      "/admin/applications/recent",
-      {
-        params: { limit },
-      }
-    );
-    return response.data;
+    const response = await axiosInstance.get("/admin/applications/recent", {
+      params: { limit },
+    });
+
+    // Map backend 'status' -> frontend 'currentStage' and 'appliedAt' -> 'appliedDate'
+    return response.data.map((app: any) => ({
+      id: app.id,
+      applicantName: app.applicantName || app.User?.name || "Unknown",
+      jobTitle: app.jobTitle || app.Job?.title || "Unknown",
+      currentStage: app.status, // maps backend field 'status'
+      appliedDate: app.appliedAt, // maps backend field 'appliedAt'
+    }));
   },
 
   // Applications Management
@@ -61,7 +67,7 @@ export const adminService = {
     await axiosInstance.delete(`/admin/applications/${id}`);
   },
 
-  // Jobs Management (Placeholder for future)
+  // Jobs Management
   getJobs: async (
     params: PaginationParams
   ): Promise<{ jobs: Job[]; total: number }> => {
@@ -88,7 +94,7 @@ export const adminService = {
     await axiosInstance.delete(`/admin/jobs/${id}`);
   },
 
-  // Users Management (Placeholder for future)
+  // Users Management
   getUsers: async (
     params: PaginationParams
   ): Promise<{ users: User[]; total: number }> => {
