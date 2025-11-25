@@ -2,19 +2,13 @@ export interface DashboardStats {
   totalJobs: number;
   totalUsers: number;
   totalApplications: number;
-  applicationsByStatus: {
-    received: number;
-    shortlisted: number;
-    rejected: number;
-    hired: number;
-  };
+  applicationsByStatus: Record<string, number>; // dynamic statuses
 }
 
 export interface PieChartData {
   name: string;
   value: number;
   color: string;
-  // This index signature is necessary for Recharts compatibility
   [key: string]: unknown;
 }
 
@@ -22,7 +16,7 @@ export interface RecentApplicant {
   id: number;
   applicantName: string;
   jobTitle: string;
-  currentStage: "Received" | "Shortlisted" | "Rejected" | "Hired";
+  currentStage: string; // dynamic statuses
   appliedDate: string;
 }
 
@@ -30,7 +24,7 @@ export interface Application {
   id: number;
   userId: number;
   jobId: number;
-  status: "Received" | "Shortlisted" | "Rejected" | "Hired";
+  status: string; // dynamic statuses
   coverLetter?: string;
   resumeUrl?: string;
   appliedDate: string;
@@ -67,14 +61,6 @@ export interface Job {
   status: "Active" | "Closed";
   createdAt: string;
 }
-
-// export interface User {
-//   id: number;
-//   name: string;
-//   email: string;
-//   roleId: number;
-//   createdAt: string;
-// }
 
 export interface PaginationParams {
   page: number;
