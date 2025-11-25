@@ -6,7 +6,6 @@ import { fadeUp, stagger } from "../../utils/animation";
 import { useState } from "react";
 
 export default function AdminDashboard() {
-  // Remove useEffect and API calls, just use static data
   const [stats] = useState<DashboardStats>({
     totalJobs: 12,
     totalUsers: 247,
@@ -44,53 +43,43 @@ export default function AdminDashboard() {
   ]);
 
   return (
-    <section className="pt-10 pb-16 px-4">
-      <div className="mx-auto max-w-7xl">
-        <motion.div
-          variants={stagger}
-          initial="initial"
-          whileInView="animate"
-          viewport={{ once: true, margin: "-100px" }}
-          className="space-y-8"
-        >
-          {/* Header Section */}
-          <motion.div variants={fadeUp} className="text-center md:text-left">
-            <span className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs text-zinc-600 shadow">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
-              Admin Dashboard
-            </span>
-            <h1 className="mt-5 text-4xl font-bold leading-tight tracking-tight md:text-5xl">
-              Hiring Overview
-            </h1>
-            <p className="mt-4 text-base leading-relaxed text-zinc-600 md:text-lg">
-              Welcome back! Here's what's happening with your hiring process.
-            </p>
-          </motion.div>
-
-          {/* Info Alert */}
-          <motion.div
-            variants={fadeUp}
-            className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800 shadow-sm"
-          >
-            ℹ️ Showing placeholder data. Connect backend endpoints for real-time
-            stats.
-          </motion.div>
-
-          {/* Stats Section */}
-          <motion.div variants={fadeUp}>
-            <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
-              <DashboardStatsComponent stats={stats} />
-            </div>
-          </motion.div>
-
-          {/* Recent Applicants Section */}
-          <motion.div variants={fadeUp}>
-            <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
-              <RecentApplicants applicants={recentApplicants} />
-            </div>
-          </motion.div>
+    <section className="pt-10 pb-16">
+      <motion.div
+        variants={stagger}
+        initial="initial"
+        animate="animate"
+        className="space-y-6"
+      >
+        {/* Header */}
+        <motion.div variants={fadeUp}>
+          <h1 className="text-3xl font-bold text-zinc-900">Admin Dashboard</h1>
+          <p className="mt-2 text-zinc-600">
+            Quick overview of active jobs, applicants, and hiring progress
+          </p>
         </motion.div>
-      </div>
+
+        {/* Info Alert */}
+        <motion.div
+          variants={fadeUp}
+          className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800 shadow-sm"
+        >
+          ℹ️ Currently showing placeholder data. Connect backend for live stats.
+        </motion.div>
+
+        {/* Stats Card */}
+        <motion.div variants={fadeUp}>
+          <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+            <DashboardStatsComponent stats={stats} />
+          </div>
+        </motion.div>
+
+        {/* Recent Applicants */}
+        <motion.div variants={fadeUp}>
+          <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+            <RecentApplicants applicants={recentApplicants} />
+          </div>
+        </motion.div>
+      </motion.div>
     </section>
   );
 }
