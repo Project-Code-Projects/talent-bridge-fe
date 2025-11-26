@@ -1,6 +1,7 @@
+// src/components/admin/AdminSidebar.tsx
 import { Link, useLocation, useNavigate } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuthStore } from "../../stores/authStore";
 import JobsIcon from "../../assets/JobsIcon.png";
 import UsersIcon from "../../assets/UsersIcon.png";
@@ -13,6 +14,10 @@ interface SidebarLink {
   icon: string;
 }
 
+interface AdminSidebarProps {
+  onWidthChange?: (width: number) => void;
+}
+
 const links: SidebarLink[] = [
   { name: "Dashboard", path: "/admin/dashboard", icon: DashboardIcon },
   { name: "Jobs", path: "/admin/jobs", icon: JobsIcon },
@@ -20,7 +25,7 @@ const links: SidebarLink[] = [
   { name: "Applications", path: "/admin/applications", icon: ApplicationIcon },
 ];
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ onWidthChange }: AdminSidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -35,6 +40,12 @@ export default function AdminSidebar() {
     logout();
     navigate("/");
   };
+
+  useEffect(() => {
+    if (onWidthChange) {
+      onWidthChange(desktopCollapsed ? 81 : 215);
+    }
+  }, [desktopCollapsed, onWidthChange]);
 
   return (
     <>
@@ -93,10 +104,10 @@ export default function AdminSidebar() {
       {/* MOBILE FAB BUTTON */}
       <div className="md:hidden fixed bottom-6 right-6 z-50">
         <button
-          onClick={() => setMobileOpen(true)}
+          onClick={() => setMobileOpen(!mobileOpen)}
           className="rounded-full bg-indigo-600 p-4 text-white shadow-lg hover:bg-indigo-700"
         >
-          ☰
+          {mobileOpen ? "✕" : "☰"}
         </button>
       </div>
 
