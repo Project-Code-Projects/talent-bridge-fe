@@ -1,4 +1,3 @@
-// src/components/admin/dashboardStats.tsx
 import {
   PieChart,
   Pie,
@@ -54,7 +53,6 @@ export default function DashboardStatsComponent({
     color: statusColors[status] || "#9ca3af",
   }));
 
-  // Map cards to corresponding admin routes
   const statCards = [
     {
       label: "Total Jobs",
@@ -112,31 +110,122 @@ export default function DashboardStatsComponent({
 
         <div className="grid gap-6 md:grid-cols-2">
           {/* Pie Chart */}
-          <div className="flex items-center justify-center h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={pieData}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  dataKey="value"
-                  labelLine={false}
-                  label={(entry) => {
-                    const data = entry.payload as PieChartData;
-                    const total = stats.totalApplications || 1;
-                    const percentage = ((data.value / total) * 100).toFixed(0);
-                    return `${data.name} ${percentage}%`;
-                  }}
-                >
-                  {pieData.map((entry, index) => (
-                    <Cell key={index} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
+          <div className="flex items-center justify-center h-64 min-h-[250px] w-full">
+            {/* Mobile Version */}
+            <div className="block md:hidden w-full h-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    dataKey="value"
+                    labelLine={false}
+                    label={(props) => {
+                      const {
+                        cx = 0,
+                        cy = 0,
+                        midAngle = 0,
+                        innerRadius = 0,
+                        outerRadius = 0,
+                        payload,
+                      } = props;
+                      const RADIAN = Math.PI / 180;
+                      const radius =
+                        innerRadius + (outerRadius - innerRadius) / 2;
+                      const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                      const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                      const total = stats.totalApplications || 1;
+                      const percentage = (
+                        (payload.value / total) *
+                        100
+                      ).toFixed(0);
+
+                      return (
+                        <text
+                          x={x}
+                          y={y}
+                          fill="white"
+                          textAnchor="middle"
+                          dominantBaseline="central"
+                          fontSize={12}
+                        >
+                          {percentage}%
+                        </text>
+                      );
+                    }}
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell key={index} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value, name) => {
+                      const displayName =
+                        name === "Interview_scheduled"
+                          ? "Interview Scheduled"
+                          : name;
+                      return [value, displayName];
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Desktop Version */}
+            <div className="hidden md:block w-full h-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    dataKey="value"
+                    labelLine={false}
+                    label={(entry) => {
+                      const data = entry.payload as PieChartData;
+                      const total = stats.totalApplications || 1;
+                      const percentage = ((data.value / total) * 100).toFixed(
+                        0
+                      );
+                      return `${
+                        data.name === "Interview_scheduled"
+                          ? "Interview Scheduled"
+                          : data.name
+                      } ${percentage}%`;
+                    }}
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell key={index} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value, name) => {
+                      const displayName =
+                        name === "Interview_scheduled"
+                          ? "Interview Scheduled"
+                          : name;
+                      return [value, displayName];
+                    }}
+                  />
+
+                  <Legend
+                    verticalAlign="bottom"
+                    formatter={(value) =>
+                      value === "Interview_scheduled"
+                        ? "Interview Scheduled"
+                        : value
+                    }
+                    wrapperStyle={{
+                      marginTop: 16,
+                      bottom: -25,
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
           </div>
 
           {/* Status Summary Cards */}
@@ -152,7 +241,9 @@ export default function DashboardStatsComponent({
                     style={{ backgroundColor: item.color }}
                   />
                   <span className="text-sm font-medium text-zinc-700">
-                    {item.name}
+                    {item.name === "Interview_scheduled"
+                      ? "Interview Scheduled"
+                      : item.name}
                   </span>
                 </div>
                 <span className="text-lg font-bold text-zinc-900">

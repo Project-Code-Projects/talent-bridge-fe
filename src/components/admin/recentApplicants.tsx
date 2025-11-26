@@ -59,7 +59,7 @@ export default function RecentApplicants({
         <Link
           key={applicant.id}
           to={`/admin/applications/${applicant.id}`}
-          className="block p-4 transition hover:bg-zinc-50"
+          className="block p-4 transition-colors duration-150 hover:bg-zinc-100 dark:hover:bg-zinc-700"
         >
           <div className="flex items-center justify-between">
             <div className="flex-1">
@@ -68,10 +68,10 @@ export default function RecentApplicants({
                   {applicant.applicantName?.charAt(0).toUpperCase() ?? "U"}
                 </div>
                 <div>
-                  <p className="font-medium text-zinc-900">
+                  <p className="font-medium text-zinc-900 dark:text-zinc-100">
                     {applicant.applicantName ?? "Unknown"}
                   </p>
-                  <p className="text-sm text-zinc-600">
+                  <p className="text-sm text-zinc-600 dark:text-zinc-300">
                     {applicant.jobTitle ?? "Unknown"}
                   </p>
                 </div>
@@ -79,7 +79,7 @@ export default function RecentApplicants({
             </div>
 
             <div className="flex items-center gap-4">
-              <span className="text-xs text-zinc-500">
+              <span className="text-xs text-zinc-500 dark:text-zinc-400">
                 {formatDate(applicant.appliedDate)}
               </span>
               <span
