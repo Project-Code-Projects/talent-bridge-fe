@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { useProfileStore } from "../../stores/profileStore";
-import { fadeUp } from "../../utils/animation";
+import { fadeUp, stagger } from "../../utils/animation";
 import ProfileSummary from "../../components/profile/ProfileSummary";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -15,22 +15,39 @@ export default function ProfileViewPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen pt-28 flex justify-center items-center">
-        Loading...
+      <div className="min-h-screen flex flex-col">
+        <section className="flex-1 pt-28 pb-16 px-4">
+          <div className="mx-auto max-w-7xl flex items-center justify-center min-h-[50vh]">
+            <div className="text-center">
+              <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent" />
+              <p className="mt-4 text-zinc-600 font-medium">
+                Loading your profile...
+              </p>
+            </div>
+          </div>
+        </section>
       </div>
     );
   }
 
   if (!profile) {
     return (
-      <div className="min-h-screen pt-28 text-center">
-        <p className="text-zinc-600 mb-6">You have no profile yet.</p>
-        <Link
-          to="/profile/setup"
-          className="inline-flex items-center rounded-xl bg-blue-600 px-6 py-3 text-white text-sm font-medium hover:bg-blue-700 transition"
-        >
-          Create Profile
-        </Link>
+      <div className="min-h-screen flex flex-col">
+        <section className="flex-1 pt-28 pb-16 px-4">
+          <div className="mx-auto max-w-7xl">
+            <div className="text-center">
+              <p className="text-lg text-zinc-600 mb-6">
+                You have no profile yet.
+              </p>
+              <Link
+                to="/profile/setup"
+                className="inline-flex items-center rounded-xl bg-blue-600 px-6 py-3 text-white text-sm font-semibold shadow hover:bg-blue-700 transition"
+              >
+                Create Profile
+              </Link>
+            </div>
+          </div>
+        </section>
       </div>
     );
   }
@@ -42,30 +59,63 @@ export default function ProfileViewPage() {
   };
 
   return (
-    <div className="min-h-screen pt-28 px-4 pb-16 bg-gray-50">
-      <motion.div
-        variants={fadeUp}
-        initial="initial"
-        animate="animate"
-        className="max-w-3xl mx-auto bg-white p-8 border border-zinc-200 rounded-2xl shadow-sm"
-      >
-        <ProfileSummary profile={profile} />
+    <div className="min-h-screen flex flex-col">
+      <section className="flex-1 pt-28 pb-16 px-4">
+        <div className="mx-auto max-w-7xl">
+          {/* Header */}
+          <motion.div
+            variants={stagger}
+            initial="initial"
+            animate="animate"
+            className="mb-12"
+          >
+            <motion.h1
+              variants={fadeUp}
+              className="text-4xl font-bold tracking-tight mb-2"
+            >
+              Your Profile
+            </motion.h1>
+            <motion.p variants={fadeUp} className="text-lg text-zinc-600">
+              Manage your personal information and profile settings
+            </motion.p>
+          </motion.div>
 
-        <div className="flex gap-4 mt-6">
-          <Link
-            to="/profile/edit"
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
+          {/* Profile Card */}
+          <motion.div
+            variants={fadeUp}
+            className="rounded-2xl border border-zinc-200 bg-white shadow-sm overflow-hidden"
           >
-            Edit Profile
-          </Link>
-          <button
-            onClick={handleDelete}
-            className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition"
-          >
-            Delete Profile
-          </button>
+            <div className="px-6 py-5 border-b border-zinc-200">
+              <h2 className="text-xl font-bold text-zinc-900">
+                Profile Information
+              </h2>
+              <p className="text-sm text-zinc-600 mt-1">
+                Your personal details and professional information
+              </p>
+            </div>
+
+            <div className="p-6">
+              <ProfileSummary profile={profile} />
+
+              {/* Action Buttons */}
+              <div className="flex gap-4 mt-8 pt-6 border-t border-zinc-100">
+                <Link
+                  to="/profile/edit"
+                  className="inline-flex items-center rounded-xl bg-blue-600 px-6 py-3 text-white text-sm font-semibold shadow hover:bg-blue-700 transition"
+                >
+                  Edit Profile
+                </Link>
+                <button
+                  onClick={handleDelete}
+                  className="inline-flex items-center rounded-xl bg-red-600 px-6 py-3 text-white text-sm font-semibold shadow hover:bg-red-700 transition"
+                >
+                  Delete Profile
+                </button>
+              </div>
+            </div>
+          </motion.div>
         </div>
-      </motion.div>
+      </section>
     </div>
   );
 }
