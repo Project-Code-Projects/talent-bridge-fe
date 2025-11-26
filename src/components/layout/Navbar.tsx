@@ -50,12 +50,16 @@ export default function Navbar() {
     window.scrollTo(0, 0);
   };
 
-  // NEW: Function to handle Logo click - always go to top of landing page
+  // UPDATED: Function to handle Logo click - smart home navigation
   const handleLogoClick = () => {
     setMobileOpen(false);
 
-    if (!isLandingPage) {
-      // If not on landing page, navigate to landing page
+    if (isAuthenticated && !isLandingPage) {
+      // If user is logged in and not on landing page, go to dashboard
+      navigate("/dashboard");
+      window.scrollTo(0, 0);
+    } else if (!isLandingPage) {
+      // If not on landing page and not logged in, go to landing page
       navigate("/");
     } else {
       // If already on landing page, scroll to top
@@ -71,7 +75,7 @@ export default function Navbar() {
       <header className="fixed inset-x-0 top-0 z-50 bg-white/70 backdrop-blur border-b border-zinc-200 dark:bg-zinc-900/70 dark:border-zinc-700">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
           <Link
-            to="/"
+            to="/admin/dashboard"
             className="flex items-center gap-2"
             onClick={handleLogoClick}
           >
@@ -97,7 +101,7 @@ export default function Navbar() {
           <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
             {/* Logo */}
             <Link
-              to="/"
+              to="/dashboard"
               className="flex items-center gap-2"
               onClick={handleLogoClick}
             >
