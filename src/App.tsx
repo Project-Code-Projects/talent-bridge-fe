@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import LandingPage from "./pages/Landing/LandingPage";
 import Layout from "./components/layout/Layout";
+import UserLayout from "./components/layout/UserLayout"; // ADD THIS
 import JobsPage from "./pages/Jobs/JobsPage";
 import JobDetailsPage from "./pages/Jobs/JobDetailsPage";
 import DashboardPage from "./pages/profile/DashboardPage";
@@ -27,12 +28,17 @@ function App() {
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
+
   return (
     <BrowserRouter>
       <Routes>
-        {/* client routes */}
+        {/* Public landing page with full layout */}
         <Route path="/" element={<Layout />}>
           <Route index element={<LandingPage />} />
+        </Route>
+
+        {/* User dashboard routes with minimal navbar */}
+        <Route path="/" element={<UserLayout />}>
           <Route path="jobs" element={<JobsPage />} />
           <Route path="jobs/:id" element={<JobDetailsPage />} />
           <Route path="auth" element={<Auth />} />
@@ -62,22 +68,6 @@ function App() {
           <Route path="users" element={<AdminUsersPage />} />
           <Route path="users/:id" element={<AdminUserProfilePage />} />
           <Route path="users/:id/edit" element={<AdminUserProfileEditPage />} />
-          {/* <Route
-            path="jobs"
-            element={<div className="p-8 text-center text-zinc-600">Jobs Management - Coming Soon</div>}
-          />
-          <Route
-            path="users"
-            element={<div className="p-8 text-center text-zinc-600">Users Management - Coming Soon</div>}
-          />
-          <Route
-            path="applications"
-            element={<div className="p-8 text-center text-zinc-600">Applications Management - Coming Soon</div>}
-          />
-          <Route
-            path="applications/:id"
-            element={<div className="p-8 text-center text-zinc-600">Application Details - Coming Soon</div>}
-          /> */}
         </Route>
       </Routes>
     </BrowserRouter>

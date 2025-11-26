@@ -2,7 +2,7 @@
 
 export type TApplicationStatus =
   | "pending"
-  | "revewing"
+  | "reviewing"
   | "accepted"
   | "rejected";
 

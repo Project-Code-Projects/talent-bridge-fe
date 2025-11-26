@@ -6,7 +6,7 @@ import type {
   TProfileCreateInput,
 } from "../../types/profile.types";
 import { useNavigate } from "react-router";
-import { fadeUp } from "../../utils/animation";
+import { fadeUp, stagger } from "../../utils/animation";
 
 export default function ProfileFormPage() {
   const {
@@ -27,6 +27,8 @@ export default function ProfileFormPage() {
   const [skills, setSkills] = useState<string[]>([]);
   const [skillInput, setSkillInput] = useState("");
   const [resumeUrl, setResumeUrl] = useState("");
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
     fetchMyProfile();
@@ -66,254 +68,391 @@ export default function ProfileFormPage() {
     }
   };
 
-  const handleDelete = async () => {
-    if (!confirm("Delete your profile? This cannot be undone.")) return;
+  const handleDelete = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
     await deleteProfile();
+    setShowDeleteConfirm(false);
     navigate("/dashboard");
   };
 
+  const cancelDelete = () => {
+    setShowDeleteConfirm(false);
+  };
+
   const handleClear = () => {
-    if (profile) {
-      setFullName(profile.fullName || "");
-      setPhone(profile.phone || "");
-      setAddress(profile.address || "");
-      setSummary(profile.summary || "");
-      setExperiences(profile.experiences || []);
-      setSkills(profile.skills || []);
-      setResumeUrl(profile.resumeUrl || "");
-    } else {
-      setFullName("");
-      setPhone("");
-      setAddress("");
-      setSummary("");
-      setExperiences([]);
-      setSkills([]);
-      setResumeUrl("");
-    }
+    setShowClearConfirm(true);
+  };
+
+  const confirmClear = () => {
+    setFullName("");
+    setPhone("");
+    setAddress("");
+    setSummary("");
+    setExperiences([]);
+    setSkills([]);
+    setResumeUrl("");
     setSkillInput("");
+    setShowClearConfirm(false);
+  };
+
+  const cancelClear = () => {
+    setShowClearConfirm(false);
   };
 
   return (
-    <div className="min-h-screen pt-28 px-4 pb-16 bg-gray-50 flex justify-center">
-      <motion.div
-        variants={fadeUp}
-        initial="initial"
-        animate="animate"
-        className="w-full max-w-4xl bg-white border border-zinc-200 rounded-2xl shadow-sm p-10"
-      >
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">
-            {profile ? "Edit Profile" : "Create Profile"}
-          </h1>
-          {profile && (
-            <button
-              onClick={handleDelete}
-              className="text-red-600 hover:text-red-800 font-medium text-sm"
-            >
-              Delete Profile
-            </button>
-          )}
+    <div className="min-h-screen flex flex-col">
+      {/* Clear Confirmation Modal */}
+      {showClearConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+          <motion.div
+            variants={fadeUp}
+            initial="initial"
+            animate="animate"
+            className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl"
+          >
+            <h3 className="text-lg font-bold text-zinc-900 mb-2">
+              Clear All Fields?
+            </h3>
+            <p className="text-zinc-600 mb-6">
+              This will remove all data from the form. This action cannot be
+              undone.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={cancelClear}
+                className="px-4 py-2 border border-zinc-300 text-zinc-700 rounded-lg hover:bg-zinc-100 transition text-sm font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmClear}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium"
+              >
+                Clear All
+              </button>
+            </div>
+          </motion.div>
         </div>
+      )}
 
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Full Name */}
-          <div>
-            <label className="font-medium">Full Name</label>
-            <input
-              className="w-full border p-3 rounded-lg mt-1"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              required
-            />
-          </div>
-
-          {/* Contact */}
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <label className="font-medium">Phone</label>
-              <input
-                className="w-full border p-3 rounded-lg mt-1"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-              />
-            </div>
-            <div>
-              <label className="font-medium">Resume URL</label>
-              <input
-                className="w-full border p-3 rounded-lg mt-1"
-                value={resumeUrl}
-                onChange={(e) => setResumeUrl(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {/* Address */}
-          <div>
-            <label className="font-medium">Address</label>
-            <input
-              className="w-full border p-3 rounded-lg mt-1"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-            />
-          </div>
-
-          {/* Summary */}
-          <div>
-            <label className="font-medium">Summary</label>
-            <textarea
-              className="w-full border p-3 rounded-lg mt-1 min-h-[120px]"
-              value={summary}
-              onChange={(e) => setSummary(e.target.value)}
-            />
-          </div>
-
-          {/* Experience */}
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <label className="font-medium text-lg">Experience</label>
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+          <motion.div
+            variants={fadeUp}
+            initial="initial"
+            animate="animate"
+            className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl"
+          >
+            <h3 className="text-lg font-bold text-zinc-900 mb-2">
+              Delete Profile?
+            </h3>
+            <p className="text-zinc-600 mb-6">
+              This will permanently delete your profile and all associated data.
+              This action cannot be undone.
+            </p>
+            <div className="flex gap-3 justify-end">
               <button
-                type="button"
-                onClick={() =>
-                  setExperiences([
-                    ...experiences,
-                    { company: "", role: "", startDate: "", endDate: "" },
-                  ])
-                }
-                className="text-blue-600 hover:underline text-sm"
+                onClick={cancelDelete}
+                className="px-4 py-2 border border-zinc-300 text-zinc-700 rounded-lg hover:bg-zinc-100 transition text-sm font-medium"
               >
-                + Add Experience
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium"
+              >
+                Delete Profile
               </button>
             </div>
+          </motion.div>
+        </div>
+      )}
 
-            {experiences.map((exp, idx) => (
-              <div
-                key={idx}
-                className="p-4 border rounded-lg bg-zinc-50 space-y-2"
-              >
-                <input
-                  className="w-full border p-2 rounded"
-                  placeholder="Company"
-                  value={exp.company}
-                  onChange={(e) =>
-                    setExperiences(
-                      experiences.map((ex, i) =>
-                        i === idx ? { ...ex, company: e.target.value } : ex
-                      )
-                    )
-                  }
-                />
-                <input
-                  className="w-full border p-2 rounded"
-                  placeholder="Role"
-                  value={exp.role}
-                  onChange={(e) =>
-                    setExperiences(
-                      experiences.map((ex, i) =>
-                        i === idx ? { ...ex, role: e.target.value } : ex
-                      )
-                    )
-                  }
-                />
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="date"
-                    className="border p-2 rounded"
-                    value={exp.startDate}
-                    onChange={(e) =>
-                      setExperiences(
-                        experiences.map((ex, i) =>
-                          i === idx ? { ...ex, startDate: e.target.value } : ex
-                        )
-                      )
-                    }
-                  />
-                  <input
-                    type="date"
-                    className="border p-2 rounded"
-                    value={exp.endDate || ""}
-                    onChange={(e) =>
-                      setExperiences(
-                        experiences.map((ex, i) =>
-                          i === idx ? { ...ex, endDate: e.target.value } : ex
-                        )
-                      )
-                    }
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setExperiences(experiences.filter((_, i) => i !== idx))
-                  }
-                  className="text-red-600 text-sm hover:underline"
-                >
-                  Remove
-                </button>
+      <section className="flex-1 pt-28 pb-16 px-4">
+        <div className="mx-auto max-w-7xl">
+          {/* Header */}
+          <motion.div
+            variants={stagger}
+            initial="initial"
+            animate="animate"
+            className="mb-12"
+          >
+            <motion.h1
+              variants={fadeUp}
+              className="text-4xl font-bold tracking-tight mb-2"
+            >
+              {profile ? "Edit Profile" : "Create Profile"}
+            </motion.h1>
+            <motion.p variants={fadeUp} className="text-lg text-zinc-600">
+              {profile
+                ? "Update your personal information and professional details"
+                : "Set up your profile to start applying for jobs"}
+            </motion.p>
+          </motion.div>
+
+          {/* Profile Form Card */}
+          <motion.div variants={fadeUp}>
+            <div className="rounded-2xl border border-zinc-200 bg-white shadow-sm overflow-hidden">
+              <div className="px-6 py-5 border-b border-zinc-200">
+                <h2 className="text-xl font-bold text-zinc-900">
+                  Profile Information
+                </h2>
+                <p className="text-sm text-zinc-600 mt-1">
+                  Fill in your details to complete your profile
+                </p>
               </div>
-            ))}
-          </div>
 
-          {/* Skills */}
-          <div className="space-y-3">
-            <label className="font-medium text-lg">Skills</label>
-            <div className="flex gap-2">
-              <input
-                className="border p-3 rounded-lg flex-1"
-                placeholder="Add skill"
-                value={skillInput}
-                onChange={(e) => setSkillInput(e.target.value)}
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  if (!skillInput.trim()) return;
-                  setSkills([...skills, skillInput.trim()]);
-                  setSkillInput("");
-                }}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg"
-              >
-                Add
-              </button>
+              <div className="p-6">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Full Name */}
+                  <div>
+                    <label className="font-medium text-sm text-zinc-700">
+                      Full Name
+                    </label>
+                    <input
+                      className="w-full border border-zinc-300 p-3 rounded-lg mt-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  {/* Contact */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="font-medium text-sm text-zinc-700">
+                        Phone
+                      </label>
+                      <input
+                        className="w-full border border-zinc-300 p-3 rounded-lg mt-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label className="font-medium text-sm text-zinc-700">
+                        Resume URL
+                      </label>
+                      <input
+                        className="w-full border border-zinc-300 p-3 rounded-lg mt-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        value={resumeUrl}
+                        onChange={(e) => setResumeUrl(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Address */}
+                  <div>
+                    <label className="font-medium text-sm text-zinc-700">
+                      Address
+                    </label>
+                    <input
+                      className="w-full border border-zinc-300 p-3 rounded-lg mt-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                    />
+                  </div>
+
+                  {/* Summary */}
+                  <div>
+                    <label className="font-medium text-sm text-zinc-700">
+                      Summary
+                    </label>
+                    <textarea
+                      className="w-full border border-zinc-300 p-3 rounded-lg mt-1 min-h-[120px] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      value={summary}
+                      onChange={(e) => setSummary(e.target.value)}
+                    />
+                  </div>
+
+                  {/* Experience */}
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <label className="font-medium text-sm text-zinc-700">
+                        Experience
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setExperiences([
+                            ...experiences,
+                            {
+                              company: "",
+                              role: "",
+                              startDate: "",
+                              endDate: "",
+                            },
+                          ])
+                        }
+                        className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                      >
+                        + Add Experience
+                      </button>
+                    </div>
+
+                    {experiences.map((exp, idx) => (
+                      <div
+                        key={idx}
+                        className="p-4 border border-zinc-200 rounded-lg bg-zinc-50 space-y-3"
+                      >
+                        <input
+                          className="w-full border border-zinc-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="Company"
+                          value={exp.company}
+                          onChange={(e) =>
+                            setExperiences(
+                              experiences.map((ex, i) =>
+                                i === idx
+                                  ? { ...ex, company: e.target.value }
+                                  : ex
+                              )
+                            )
+                          }
+                        />
+                        <input
+                          className="w-full border border-zinc-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="Role"
+                          value={exp.role}
+                          onChange={(e) =>
+                            setExperiences(
+                              experiences.map((ex, i) =>
+                                i === idx ? { ...ex, role: e.target.value } : ex
+                              )
+                            )
+                          }
+                        />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                          <input
+                            type="date"
+                            className="border border-zinc-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            value={exp.startDate}
+                            onChange={(e) =>
+                              setExperiences(
+                                experiences.map((ex, i) =>
+                                  i === idx
+                                    ? { ...ex, startDate: e.target.value }
+                                    : ex
+                                )
+                              )
+                            }
+                          />
+                          <input
+                            type="date"
+                            className="border border-zinc-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            value={exp.endDate || ""}
+                            min={exp.startDate}
+                            onChange={(e) =>
+                              setExperiences(
+                                experiences.map((ex, i) =>
+                                  i === idx
+                                    ? { ...ex, endDate: e.target.value }
+                                    : ex
+                                )
+                              )
+                            }
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setExperiences(
+                              experiences.filter((_, i) => i !== idx)
+                            )
+                          }
+                          className="text-red-600 text-sm hover:text-red-700 font-medium"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Skills */}
+                  <div className="space-y-3">
+                    <label className="font-medium text-sm text-zinc-700">
+                      Skills
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        className="border border-zinc-300 p-3 rounded-lg flex-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Add skill"
+                        value={skillInput}
+                        onChange={(e) => setSkillInput(e.target.value)}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!skillInput.trim()) return;
+                          setSkills([...skills, skillInput.trim()]);
+                          setSkillInput("");
+                        }}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                      >
+                        Add
+                      </button>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                      {skills.map((skill) => (
+                        <span
+                          key={skill}
+                          className="px-3 py-1 bg-zinc-100 rounded-full text-sm flex items-center gap-2"
+                        >
+                          {skill}
+                          <button
+                            onClick={() =>
+                              setSkills(skills.filter((s) => s !== skill))
+                            }
+                            type="button"
+                            className="text-red-600 font-bold hover:text-red-700"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-4 pt-6 border-t border-zinc-100">
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="inline-flex items-center rounded-xl bg-blue-600 px-6 py-3 text-white text-sm font-semibold shadow hover:bg-blue-700 transition"
+                    >
+                      {loading
+                        ? "Saving..."
+                        : profile
+                        ? "Update Profile"
+                        : "Create Profile"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleClear}
+                      className="inline-flex items-center rounded-xl bg-gray-600 px-6 py-3 text-white text-sm font-semibold shadow hover:bg-gray-700 transition"
+                    >
+                      Clear
+                    </button>
+                    {profile && (
+                      <button
+                        type="button"
+                        onClick={handleDelete}
+                        className="inline-flex items-center rounded-xl bg-red-600 px-6 py-3 text-white text-sm font-semibold shadow hover:bg-red-700 transition"
+                      >
+                        Delete Profile
+                      </button>
+                    )}
+                  </div>
+                </form>
+              </div>
             </div>
-
-            <div className="flex flex-wrap gap-2">
-              {skills.map((skill) => (
-                <span
-                  key={skill}
-                  className="px-3 py-1 bg-gray-200 rounded-full flex items-center gap-2"
-                >
-                  {skill}
-                  <button
-                    onClick={() => setSkills(skills.filter((s) => s !== skill))}
-                    type="button"
-                    className="text-red-600 font-bold"
-                  >
-                    ×
-                  </button>
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Buttons */}
-          <div className="flex gap-4">
-            <button
-              type="submit"
-              disabled={loading}
-              className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition"
-            >
-              {profile ? "Update Profile" : "Create Profile"}
-            </button>
-            <button
-              type="button"
-              onClick={handleClear}
-              className="bg-gray-300 text-black px-6 py-3 rounded-xl hover:bg-gray-400 transition"
-            >
-              Clear
-            </button>
-          </div>
-        </form>
-      </motion.div>
+          </motion.div>
+        </div>
+      </section>
     </div>
   );
 }

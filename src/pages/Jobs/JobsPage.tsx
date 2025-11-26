@@ -17,7 +17,11 @@ export default function JobsPage() {
   const [params, setParams] = useSearchParams();
   const page = Number(params.get("page")) || 1;
   const currentPageFromUrl = page < 1 ? 1 : page;
-  const limit = 10; // can expose a dropdown to change this
+  const limit = 10;
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentPageFromUrl]);
 
   const jobs = useJobStore(selectJobs);
   const isLoading = useJobStore(selectIsLoading);
