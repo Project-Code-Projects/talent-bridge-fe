@@ -1,8 +1,7 @@
-// src/components/admin/AdminDashboard.tsx
 import { motion } from "framer-motion";
 import { fadeUp, stagger } from "../../utils/animation";
-import DashboardStatsComponent from "./dashboardStats";
-import RecentApplicants from "./recentApplicants";
+import DashboardStatsComponent from "../../components/admin/dashboardStats";
+import RecentApplicants from "../../components/admin/recentApplicants";
 import { useQuery } from "@tanstack/react-query";
 import { fetchDashboardData } from "../../services/adminDashboardService";
 import type { DashboardStats, RecentApplicant } from "../../types/admin.types";
@@ -12,7 +11,7 @@ type DashboardData = {
   recentApplicants: RecentApplicant[];
 };
 
-export default function AdminDashboard() {
+export default function AdminDashboardPage() {
   const { data, isLoading, error, refetch } = useQuery<DashboardData>({
     queryKey: ["adminDashboardData"],
     queryFn: fetchDashboardData,
